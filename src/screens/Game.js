@@ -1,7 +1,9 @@
 import React, {Component} from 'react';
-import {Text, View, StyleSheet, TouchableNativeFeedback, BackHandler, Dimensions} from 'react-native';
+import {View, StyleSheet, TouchableNativeFeedback, BackHandler, Dimensions} from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
+import {Fonts} from '../constants';
 // Components
+import MyAppText from '../components/MyAppText';
 import DraggableCard from '../components/DraggableCard';
 
 const {width, height} = Dimensions.get('window');
@@ -22,7 +24,7 @@ class Game extends Component {
     this.redo = this.redo.bind(this);
     // Setting Dick
     var cards = [];
-    for (var i = 1; i < 112; i++) {
+    for (let i = 1; i < 112; i++) {
       cards.push(i);
     }
     // Shuffling Cards
@@ -74,8 +76,8 @@ class Game extends Component {
     // Timer
     let that = this;
     this.timer = setInterval(function () {
-      var seconds = parseInt(that.state.timer.split(':')[1]),
-        minutes = parseInt(that.state.timer.split(':')[0]);
+      var seconds = parseInt(that.state.timer.split(':')[1], 10),
+        minutes = parseInt(that.state.timer.split(':')[0], 10);
       if (that.state.cards.length === 0 || that.state.gameover) {
         return false;
       }
@@ -161,9 +163,9 @@ class Game extends Component {
     var playedCards = 111 - this.state.cards.length,
       timeElapsed = this.state.timer,
       splitting = timeElapsed.split(':'),
-      sec = parseInt(splitting[1]),
-      min = parseInt(splitting[0]) * 60,
-      score = parseInt((playedCards * 1000) / (min + sec) + this.state.score);
+      sec = parseInt(splitting[1], 10),
+      min = parseInt(splitting[0], 10) * 60,
+      score = parseInt((playedCards * 1000) / (min + sec) + this.state.score, 10);
     this.setState({score});
   }
   arrangeCards() {
@@ -184,7 +186,7 @@ class Game extends Component {
   startNewGame() {
     // Setting Dick
     var cards = [];
-    for (var i = 1; i < 112; i++) {
+    for (let i = 1; i < 112; i++) {
       cards.push(i);
     }
     // Shuffling Cards
@@ -255,19 +257,19 @@ class Game extends Component {
       <View style={styles.container}>
         <View style={styles.statusBar}>
           <View style={styles.barItem}>
-            <Text style={styles.barIcon}>Cards left</Text>
-            <Text style={styles.barTxt}>{this.state.cards.length}</Text>
+            <MyAppText style={styles.barIcon}>Cards left</MyAppText>
+            <MyAppText style={styles.barTxt}>{this.state.cards.length}</MyAppText>
           </View>
           {this.state.visibleTimer ? (
             <View style={styles.barItem}>
               <Icon size={height * 0.035} name="md-time-outline" color="#fff" />
-              <Text style={styles.barTxt}>{this.state.timer}</Text>
+              <MyAppText style={styles.barTxt}>{this.state.timer}</MyAppText>
             </View>
           ) : null}
           {this.state.visibleScore ? (
             <View style={styles.barItem}>
-              <Text style={styles.barIcon}>Score</Text>
-              <Text style={styles.barTxt}>{this.state.score}</Text>
+              <MyAppText style={styles.barIcon}>Score</MyAppText>
+              <MyAppText style={styles.barTxt}>{this.state.score}</MyAppText>
             </View>
           ) : null}
         </View>
@@ -330,7 +332,7 @@ class Game extends Component {
             <Icon size={width * 0.08} name={'md-arrow-down'} color={'#F73859'} />
             <View style={styles.zoneCard}>
               {this.state.dropZones.areaOne.value ? (
-                <Text style={styles.zoneCardTxt}>{this.state.dropZones.areaOne.value}</Text>
+                <MyAppText style={styles.zoneCardTxt}>{this.state.dropZones.areaOne.value}</MyAppText>
               ) : null}
             </View>
           </View>
@@ -342,7 +344,7 @@ class Game extends Component {
             )}
             <View style={styles.zoneCard}>
               {this.state.dropZones.areaTwo.value ? (
-                <Text style={styles.zoneCardTxt}>{this.state.dropZones.areaTwo.value}</Text>
+                <MyAppText style={styles.zoneCardTxt}>{this.state.dropZones.areaTwo.value}</MyAppText>
               ) : null}
             </View>
           </View>
@@ -350,7 +352,7 @@ class Game extends Component {
             <Icon size={width * 0.08} name={'md-arrow-up'} color={'#27ae60'} />
             <View style={styles.zoneCard}>
               {this.state.dropZones.areaThree.value ? (
-                <Text style={styles.zoneCardTxt}>{this.state.dropZones.areaThree.value}</Text>
+                <MyAppText style={styles.zoneCardTxt}>{this.state.dropZones.areaThree.value}</MyAppText>
               ) : null}
             </View>
           </View>
@@ -373,7 +375,7 @@ class Game extends Component {
               })
             ) : (
               <View style={styles.gameendWrapper}>
-                <Text style={styles.wrapperTitle}>Game Over !</Text>
+                <MyAppText style={styles.wrapperTitle}>Game Over !</MyAppText>
                 <View style={{flexDirection: 'row'}}>
                   <TouchableNativeFeedback onPress={this.startNewGame}>
                     <View style={[styles.wrapperBtn, {marginRight: 20}]}>
@@ -390,7 +392,7 @@ class Game extends Component {
             )
           ) : (
             <View style={styles.gameendWrapper}>
-              <Text style={styles.wrapperTitle}>You Win !</Text>
+              <MyAppText style={styles.wrapperTitle}>You Win !</MyAppText>
               <View style={{flexDirection: 'row'}}>
                 <TouchableNativeFeedback onPress={this.startNewGame}>
                   <View style={[styles.wrapperBtn, {marginRight: 20}]}>
@@ -430,12 +432,10 @@ const styles = StyleSheet.create({
   },
   barIcon: {
     color: '#fff',
-    // fontFamily: Fonts.Montserrat,
     fontSize: height * 0.025,
   },
   barTxt: {
     color: '#F73859',
-    // fontFamily: Fonts.Montserrat,
     fontSize: height * 0.025,
     marginTop: 2,
     letterSpacing: 2,
@@ -498,7 +498,7 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
     paddingTop: 5,
     color: '#fff',
-    // fontFamily: Fonts.MontserratB,
+    fontFamily: Fonts.extra_bold,
     fontSize: width * 0.06,
   },
   cardsContainer: {
@@ -524,7 +524,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   wrapperTitle: {
-    // fontFamily: Fonts.MontserratB,
+    fontFamily: Fonts.extra_bold,
     fontSize: width * 0.1,
     color: '#F73859',
     backgroundColor: '#fff',

@@ -1,5 +1,6 @@
 import React, {useEffect} from 'react';
 import {View, ActivityIndicator} from 'react-native';
+import {CommonStyles} from '../constants';
 
 const Splash = ({navigation}) => {
   useEffect(() => {
@@ -7,7 +8,7 @@ const Splash = ({navigation}) => {
   }, [navigation]);
 
   return (
-    <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+    <View style={CommonStyles.container}>
       <ActivityIndicator size="large" color="#F73859" />
     </View>
   );

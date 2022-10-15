@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import {View, Modal, StyleSheet, Dimensions, ScrollView, BackHandler, TouchableOpacity} from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import MyAppText from '../components/MyAppText';
-import colors from '../constants';
+import {Fonts, CommonStyles} from '../constants';
 
 const {width, height} = Dimensions.get('window');
 
@@ -16,7 +16,7 @@ const Menu = ({navigation}) => {
   );
 
   return (
-    <View style={styles.container}>
+    <View style={CommonStyles.container}>
       <MyAppText style={styles.title}>111 Kards</MyAppText>
 
       <Button text="Start" onPress={() => navigation.navigate('Game')} color="#F73859" />
@@ -24,7 +24,7 @@ const Menu = ({navigation}) => {
       <Button text="Exit" onPress={() => BackHandler.exitApp()} />
 
       <Modal animationType="slide" visible={infoVisible} onRequestClose={() => toggleInfo(false)}>
-        <View style={[styles.container, {backgroundColor: colors.MAIN_COLOR}]}>
+        <View style={CommonStyles.container}>
           <View style={styles.infoContainer}>
             <ScrollView showsVerticalScrollIndicator={false}>
               <MyAppText style={styles.infoHeading}>How to play !</MyAppText>
@@ -53,11 +53,6 @@ const Menu = ({navigation}) => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   title: {
     borderRadius: 5,
     marginBottom: 35,
@@ -66,10 +61,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 30,
     fontSize: width * 0.15,
     backgroundColor: '#eee',
-    fontFamily: 'Montserrat-ExtraBold',
+    fontFamily: Fonts.extra_bold,
   },
   btn: {
     padding: 15,
+    elevation: 1,
     marginTop: 15,
     borderRadius: 5,
     textAlign: 'center',
@@ -79,7 +75,7 @@ const styles = StyleSheet.create({
   },
   infoContainer: {
     padding: 25,
-    elevation: 3,
+    elevation: 2,
     borderRadius: 5,
     width: width * 0.9,
     backgroundColor: '#fff',
@@ -90,7 +86,7 @@ const styles = StyleSheet.create({
     marginBottom: 30,
     textAlign: 'center',
     fontSize: width * 0.08,
-    fontFamily: 'Montserrat-ExtraBold',
+    fontFamily: Fonts.extra_bold,
   },
   info: {
     marginBottom: 5,

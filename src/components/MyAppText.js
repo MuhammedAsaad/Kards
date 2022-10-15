@@ -1,12 +1,7 @@
 import React from 'react';
-import {StyleSheet, Text} from 'react-native';
+import {Text} from 'react-native';
+import {Fonts} from '../constants';
 
-const MyAppText = ({style, children}) => <Text style={[styles.text, style]}>{children}</Text>;
-
-const styles = StyleSheet.create({
-  text: {
-    fontFamily: 'Montserrat-Regular',
-  },
-});
+const MyAppText = ({style, children}) => <Text style={[{fontFamily: Fonts.regular}, style]}>{children}</Text>;
 
 export default MyAppText;
