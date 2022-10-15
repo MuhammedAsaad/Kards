@@ -1,33 +1,35 @@
-import React, { Component } from 'react';
-import { View, StatusBar } from 'react-native';
-// Fonts
-import { Fonts } from './assets/Fonts';
-// Components
-import Splash from './src/components/Splash';
-import Main from './src/components/Main';
+import React from 'react';
+import {View} from 'react-native';
+import {DefaultTheme, NavigationContainer} from '@react-navigation/native';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import colors from './src/constants';
+// Screens
+import Splash from './src/screens/Splash';
+import Menu from './src/screens/Menu';
+import Game from './src/screens/Game';
 
-class App extends Component {
-  constructor(props) {
-    super(props);
-    this.state = { appLoaded: false }
-  }
-  componentDidMount() {
-    let that = this;
-    setTimeout(() => that.setState({appLoaded: true}), 1000);
-  }
-  render() {
-    return (
-      <View style={{flex: 1}}>
-        <StatusBar backgroundColor="#283149" />
-        { this.state.appLoaded
-          ?
-            <Main />
-          :
-            <Splash />
-        }
-      </View>
-    );
-  }
-}
+const Stack = createNativeStackNavigator();
+
+const Theme = {
+  ...DefaultTheme,
+  colors: {
+    ...DefaultTheme.colors,
+    background: colors.MAIN_COLOR,
+  },
+};
+
+const App = () => (
+  <View style={{flex: 1}}>
+    <NavigationContainer theme={Theme}>
+      <Stack.Navigator
+        initialRouteName="Splash"
+        screenOptions={{headerShown: false, statusBarColor: colors.MAIN_COLOR}}>
+        <Stack.Screen name="Splash" component={Splash} />
+        <Stack.Screen name="Menu" component={Menu} />
+        <Stack.Screen name="Game" component={Game} />
+      </Stack.Navigator>
+    </NavigationContainer>
+  </View>
+);
 
 export default App;
