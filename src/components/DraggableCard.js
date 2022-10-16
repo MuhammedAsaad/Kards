@@ -1,93 +1,88 @@
-import React, {Component} from 'react';
+import React, {useRef} from 'react';
 import {Text, Animated, Dimensions, StyleSheet, PanResponder} from 'react-native';
 
 const {width} = Dimensions.get('window');
 
-export default class DraggableCard extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {pan: new Animated.ValueXY()};
-    // Add a listener for the delta value change
-    this._val = {x: 0, y: 0};
-    this.state.pan.addListener(value => (this._val = value));
-    // Initialize PanResponder with move handling
-    this.panResponder = PanResponder.create({
-      onStartShouldSetPanResponder: (e, gesture) => true,
-      onPanResponderMove: Animated.event([null, {dx: this.state.pan.x, dy: this.state.pan.y}]),
-      onPanResponderRelease: (e, gesture) => this.isDropZone(gesture),
-    });
-  }
+const DraggableCard = ({number, dropZones, updateValue}) => {
+  const pan = useRef(new Animated.ValueXY()).current;
+  const panResponder = useRef(
+    PanResponder.create({
+      onMoveShouldSetPanResponder: () => true,
+      onPanResponderRelease: (e, gesture) => isDropZone(gesture),
+      onPanResponderGrant: () => pan.setOffset({x: pan.x._value, y: pan.y._value}),
+      onPanResponderMove: Animated.event([null, {dx: pan.x, dy: pan.y}], {useNativeDriver: false}),
+    }),
+  ).current;
 
-  isDropZone(gesture) {
-    var dz = this.props.dropZones,
-      value = this.props.number,
-      areaTwoRole = dz.areaTwo.role;
-
+  const isDropZone = gesture => {
     if (
-      gesture.moveY > dz.areaOne.coordinate.y + 100 &&
-      gesture.moveY < dz.areaOne.coordinate.y + dz.areaOne.coordinate.height + 100
+      gesture.moveY > dropZones.areaOne.coordinate.y + 100 &&
+      gesture.moveY < dropZones.areaOne.coordinate.y + dropZones.areaOne.coordinate.height + 100
     ) {
       if (
-        gesture.moveX > dz.areaOne.coordinate.x &&
-        gesture.moveX < dz.areaOne.coordinate.x + dz.areaOne.coordinate.width &&
-        (dz.areaOne.value === null || dz.areaOne.value > value || dz.areaOne.value === value - 10)
+        gesture.moveX > dropZones.areaOne.coordinate.x &&
+        gesture.moveX < dropZones.areaOne.coordinate.x + dropZones.areaOne.coordinate.width &&
+        (dropZones.areaOne.value === null ||
+          dropZones.areaOne.value > number ||
+          dropZones.areaOne.value === number - 10)
       ) {
-        this.props.updateValue('areaOne', value);
+        updateValue('areaOne', number);
       } else if (
-        gesture.moveX > dz.areaTwo.coordinate.x &&
-        gesture.moveX < dz.areaTwo.coordinate.x + dz.areaTwo.coordinate.width &&
-        areaTwoRole === true &&
-        (dz.areaTwo.value === null || dz.areaTwo.value < value || dz.areaTwo.value === value + 10)
+        (gesture.moveX > dropZones.areaTwo.coordinate.x &&
+          gesture.moveX < dropZones.areaTwo.coordinate.x + dropZones.areaTwo.coordinate.width &&
+          dropZones.areaTwo.role === false &&
+          (dropZones.areaTwo.value === null ||
+            dropZones.areaTwo.value > number ||
+            dropZones.areaTwo.value === number - 10)) ||
+        (gesture.moveX > dropZones.areaTwo.coordinate.x &&
+          gesture.moveX < dropZones.areaTwo.coordinate.x + dropZones.areaTwo.coordinate.width &&
+          dropZones.areaTwo.role === true &&
+          (dropZones.areaTwo.value === null ||
+            dropZones.areaTwo.value < number ||
+            dropZones.areaTwo.value === number + 10))
       ) {
-        this.props.updateValue('areaTwo', value);
+        updateValue('areaTwo', number);
       } else if (
-        gesture.moveX > dz.areaTwo.coordinate.x &&
-        gesture.moveX < dz.areaTwo.coordinate.x + dz.areaTwo.coordinate.width &&
-        areaTwoRole === false &&
-        (dz.areaTwo.value === null || dz.areaTwo.value > value || dz.areaTwo.value === value - 10)
+        gesture.moveX > dropZones.areaThree.coordinate.x &&
+        gesture.moveX < dropZones.areaThree.coordinate.x + dropZones.areaThree.coordinate.width &&
+        (dropZones.areaThree.value === null ||
+          dropZones.areaThree.value < number ||
+          dropZones.areaThree.value === number + 10)
       ) {
-        this.props.updateValue('areaTwo', value);
-      } else if (
-        gesture.moveX > dz.areaThree.coordinate.x &&
-        gesture.moveX < dz.areaThree.coordinate.x + dz.areaThree.coordinate.width &&
-        (dz.areaThree.value === null || dz.areaThree.value < value || dz.areaThree.value === value + 10)
-      ) {
-        this.props.updateValue('areaThree', value);
+        updateValue('areaThree', number);
       } else {
-        Animated.spring(this.state.pan, {
-          toValue: {x: 0, y: 0},
-          friction: 10,
-        }).start();
+        resetPosition();
       }
     } else {
-      Animated.spring(this.state.pan, {
-        toValue: {x: 0, y: 0},
-        friction: 10,
-      }).start();
+      resetPosition();
     }
-  }
+  };
 
-  render() {
-    const panStyle = {transform: this.state.pan.getTranslateTransform()};
-    return (
-      <Animated.View {...this.panResponder.panHandlers} style={[panStyle, styles.card]}>
-        <Text style={styles.cardTxt}>{this.props.number}</Text>
-      </Animated.View>
-    );
-  }
-}
+  const resetPosition = () =>
+    Animated.spring(pan, {friction: 10, toValue: {x: 0, y: 0}, useNativeDriver: false}).start();
+
+  return (
+    <Animated.View
+      style={{transform: [{translateX: pan.x}, {translateY: pan.y}], ...styles.wrapper}}
+      {...panResponder.panHandlers}>
+      <Text style={styles.text}>{number}</Text>
+    </Animated.View>
+  );
+};
 
 let styles = StyleSheet.create({
-  card: {
-    backgroundColor: '#283149',
+  wrapper: {
     flex: 1,
-    width: '100%',
     padding: 7,
     elevation: 3,
+    width: '100%',
     borderRadius: 5,
+    backgroundColor: '#283149',
   },
-  cardTxt: {
+  text: {
     color: '#fff',
     fontSize: width * 0.05,
   },
 });
+
+export default DraggableCard;
