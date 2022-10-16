@@ -1,417 +1,356 @@
-import React, {Component} from 'react';
+import React, {useEffect, useState} from 'react';
 import {View, StyleSheet, TouchableNativeFeedback, BackHandler, Dimensions} from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {Fonts} from '../constants';
 // Components
 import MyAppText from '../components/MyAppText';
+import SettingButton from '../components/SettingButton';
 import DraggableCard from '../components/DraggableCard';
 
 const {width, height} = Dimensions.get('window');
 
-class Game extends Component {
-  constructor(props) {
-    super(props);
-    // Binding
-    this.setDropZoneValues = this.setDropZoneValues.bind(this);
-    this.updateValue = this.updateValue.bind(this);
-    this.removeDropped = this.removeDropped.bind(this);
-    this.addingTwoCards = this.addingTwoCards.bind(this);
-    this.switchZone = this.switchZone.bind(this);
-    this.updateScore = this.updateScore.bind(this);
-    this.arrangeCards = this.arrangeCards.bind(this);
-    this.startNewGame = this.startNewGame.bind(this);
-    this.gameoverCheck = this.gameoverCheck.bind(this);
-    this.redo = this.redo.bind(this);
-    // Setting Dick
-    var cards = [];
-    for (let i = 1; i < 112; i++) {
-      cards.push(i);
-    }
-    // Shuffling Cards
-    for (let i = cards.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [cards[i], cards[j]] = [cards[j], cards[i]];
-    }
-    // Displayed Cards
-    var visibleCards = cards.slice(0, 8);
-    // Game State and Info
-    this.state = {
-      dropZones: {
-        areaOne: {
-          coordinate: null,
-          value: null,
-          role: false,
-        },
-        areaTwo: {
-          coordinate: null,
-          value: null,
-          role: false,
-        },
-        areaThree: {
-          coordinate: null,
-          value: null,
-          role: true,
-        },
+const Game = ({navigation}) => {
+  let timerId;
+  const [state, setState] = useState({
+    dropZones: {
+      areaOne: {
+        coordinate: null,
+        value: null,
+        role: false,
       },
-      cards,
-      visibleCards,
-      arranged: false,
-      timer: '00:00',
-      score: 0,
-      settings: false,
-      visibleTimer: true,
-      visibleScore: true,
-      flipCount: 0,
-      flipLimit: 27,
-      gameover: false,
-      prevState: {
-        score: 0,
-        cardPlayed: null,
-        visibleCards: [],
-        zoneValues: {},
+      areaTwo: {
+        coordinate: null,
+        value: null,
+        role: false,
       },
-    };
-  }
-  componentDidMount() {
-    // Timer
-    let that = this;
-    this.timer = setInterval(function () {
-      var seconds = parseInt(that.state.timer.split(':')[1], 10),
-        minutes = parseInt(that.state.timer.split(':')[0], 10);
-      if (that.state.cards.length === 0 || that.state.gameover) {
-        return false;
-      }
-      seconds++;
-      if (seconds > 59) {
-        seconds = '00';
-        minutes++;
-      }
-      if (seconds < 10 && seconds !== '00') {
-        seconds = '0' + seconds;
-      }
-      if (minutes < 10) {
-        minutes = '0' + minutes;
-      }
-      var timer = minutes + ':' + seconds;
-      that.setState({timer});
-    }, 1000);
-  }
-  componentWillUnmount() {
-    // Remove Timer on unmounting >> inhance performance
-    this.timer && clearInterval(this.timer);
-    this.timer = false;
-  }
-  setDropZoneValues(event, name) {
-    var dropZones = {...this.state.dropZones};
-    dropZones[name].coordinate = event.nativeEvent.layout;
-    this.setState({dropZones});
-  }
-  updateValue(zone, value) {
-    var dropZones = {...this.state.dropZones},
-      prevState = {};
-    prevState.lastCard = this.state.dropZones[zone].value;
-    prevState.score = this.state.score;
-    prevState.visibleCards = this.state.visibleCards;
-    prevState.cards = this.state.cards;
-    prevState.zoneChanged = zone;
-    dropZones[zone].value = value;
-    this.setState({dropZones, prevState});
-    this.removeDropped(value);
-  }
-  removeDropped(num) {
-    var visibleCards = [...this.state.visibleCards],
-      droppedCardIndex = visibleCards.indexOf(num),
-      cards = [...this.state.cards],
-      droppedCardsIndex = cards.indexOf(num);
+      areaThree: {
+        coordinate: null,
+        value: null,
+        role: true,
+      },
+    },
+  });
 
-    visibleCards.splice(droppedCardIndex, 1);
-    cards.splice(droppedCardsIndex, 1);
-    this.setState(
-      {
-        visibleCards,
+  useEffect(() => {
+    startNewGame();
+    return () => clearInterval(timerId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const setDropZoneValues = (event, name) => {
+    setState(prev => {
+      let dropZones = {...prev.dropZones};
+      dropZones[name].coordinate = event.nativeEvent.layout;
+      return {...prev, dropZones};
+    });
+  };
+
+  const updateValue = (zone, value) => {
+    setState(prev => {
+      let dropZones = {...prev.dropZones};
+      let prevState = {};
+      prevState.lastCard = prev.dropZones[zone].value;
+      prevState.score = prev.score;
+      prevState.visibleCards = prev.visibleCards;
+      prevState.cards = prev.cards;
+      prevState.zoneChanged = zone;
+      dropZones[zone].value = value;
+      return {...prev, dropZones, prevState};
+    });
+    removeDropped(value);
+  };
+
+  const removeDropped = num => {
+    setState(prev => {
+      let cards = [...prev.cards];
+      let droppedCardsIndex = cards.indexOf(num);
+      let visibleCards = [...prev.visibleCards];
+      let droppedCardIndex = visibleCards.indexOf(num);
+      cards.splice(droppedCardsIndex, 1);
+      visibleCards.splice(droppedCardIndex, 1);
+      return {...prev, cards, visibleCards};
+    });
+    addingTwoCards();
+    switchZone();
+    updateScore();
+    gameoverCheck();
+  };
+
+  const addingTwoCards = () => {
+    setState(prev => {
+      let visibleCards = [...prev.visibleCards];
+      if (visibleCards.length === 6) {
+        let cards = [...prev.cards];
+        let newCards = cards.slice(6, 8);
+        return {...prev, visibleCards: visibleCards.concat(newCards)};
+      }
+      return prev;
+    });
+  };
+
+  const switchZone = () => {
+    setState(prev => {
+      let dropZones = {...prev.dropZones};
+      let flipLimit = prev.flipLimit;
+      let flipCount = prev.flipCount;
+
+      if (flipCount === flipLimit) {
+        dropZones.areaTwo.role = !dropZones.areaTwo.role;
+        return {...prev, dropZones, flipCount: 0};
+      } else {
+        flipCount++;
+        return {...prev, flipCount};
+      }
+    });
+  };
+
+  const updateScore = () => {
+    setState(prev => {
+      let playedCards = 111 - prev.cards?.length,
+        timeElapsed = prev.timer,
+        splitting = timeElapsed.split(':'),
+        sec = parseInt(splitting[1], 10),
+        min = parseInt(splitting[0], 10) * 60,
+        score = parseInt((playedCards * 1000) / (min + sec) + prev.score, 10);
+      return {...prev, score};
+    });
+  };
+
+  const arrangeCards = () => {
+    setState(prev => {
+      let visibleCards = [...prev.visibleCards];
+      visibleCards.sort((a, b) => a - b);
+      if (prev.arranged) {
+        visibleCards.reverse();
+      }
+
+      return {...prev, visibleCards, arranged: !prev.arranged};
+    });
+  };
+
+  const startNewGame = () => {
+    setState(prev => {
+      // Setting Dick
+      let cards = [];
+      for (let i = 1; i < 112; i++) {
+        cards.push(i);
+      }
+      // Shuffling Cards
+      for (let i = cards.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [cards[i], cards[j]] = [cards[j], cards[i]];
+      }
+      // Displayed Cards
+      let visibleCards = cards.slice(0, 8);
+      // Reset Zones Values
+      let dropZones = {...prev.dropZones};
+      dropZones.areaOne.value = null;
+      dropZones.areaTwo.value = null;
+      dropZones.areaThree.value = null;
+      return {
         cards,
-      },
-      async () => {
-        await this.addingTwoCards();
-        this.switchZone();
-        this.updateScore();
-        this.gameoverCheck();
-      },
-    );
-  }
-  addingTwoCards() {
-    var visibleCards = [...this.state.visibleCards];
-    if (visibleCards.length === 6) {
-      var cards = [...this.state.cards],
-        newCards = cards.slice(6, 8);
-      this.setState({visibleCards: visibleCards.concat(newCards)});
-    }
-  }
-  switchZone() {
-    var dropZones = {...this.state.dropZones},
-      flipLimit = this.state.flipLimit,
-      flipCount = this.state.flipCount;
-    if (flipCount === flipLimit) {
-      dropZones.areaTwo.role = !this.state.dropZones.areaTwo.role;
-      this.setState({dropZones, flipCount: 0});
-    } else {
-      flipCount++;
-      this.setState({flipCount});
-    }
-  }
-  updateScore() {
-    var playedCards = 111 - this.state.cards.length,
-      timeElapsed = this.state.timer,
-      splitting = timeElapsed.split(':'),
-      sec = parseInt(splitting[1], 10),
-      min = parseInt(splitting[0], 10) * 60,
-      score = parseInt((playedCards * 1000) / (min + sec) + this.state.score, 10);
-    this.setState({score});
-  }
-  arrangeCards() {
-    var visibleCards = [...this.state.visibleCards];
-    visibleCards.sort((a, b) => a - b);
-    if (this.state.arranged) {
-      visibleCards.reverse();
-      this.setState({
+        dropZones,
         visibleCards,
-        arranged: !this.state.arranged,
-      });
-    }
-    this.setState({
-      visibleCards,
-      arranged: !this.state.arranged,
+        score: 0,
+        flipCount: 0,
+        flipLimit: 28,
+        timer: '00:00',
+        settings: false,
+        arranged: false,
+        gameover: false,
+        visibleTimer: true,
+        visibleScore: true,
+        prevState: {
+          score: 0,
+          cardPlayed: null,
+          visibleCards: [],
+          zoneValues: {},
+        },
+      };
     });
-  }
-  startNewGame() {
-    // Setting Dick
-    var cards = [];
-    for (let i = 1; i < 112; i++) {
-      cards.push(i);
-    }
-    // Shuffling Cards
-    for (let i = cards.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [cards[i], cards[j]] = [cards[j], cards[i]];
-    }
-    // Displayed Cards
-    var visibleCards = cards.slice(0, 8);
-    // Reset Zones Values
-    var dropZones = {...this.state.dropZones};
-    dropZones.areaOne.value = null;
-    dropZones.areaTwo.value = null;
-    dropZones.areaThree.value = null;
-    // Reset Timer
-    var timer = '00:00';
-    this.setState({
-      cards,
-      visibleCards,
-      dropZones,
-      timer,
-      score: 0,
-      flipCount: 0,
-      gameover: false,
-    });
-  }
-  gameoverCheck() {
-    var visibleCards = this.state.visibleCards;
-    if (
-      this.state.dropZones.areaOne.value &&
-      this.state.dropZones.areaTwo.value &&
-      this.state.dropZones.areaThree.value
-    ) {
-      var zoneOne = this.state.dropZones.areaOne.value,
-        zoneTwo = this.state.dropZones.areaTwo.value,
-        zoneThree = this.state.dropZones.areaThree.value,
-        availableMoves = 0;
-      visibleCards.map(v => {
-        if (
-          (this.state.dropZones.areaTwo.role && v > zoneTwo) ||
-          (!this.state.dropZones.areaTwo.role && v < zoneTwo) ||
-          v < zoneOne ||
-          v > zoneThree
-        ) {
-          availableMoves++;
+    // Start Timer :)
+    startTimer();
+  };
+
+  const startTimer = () => {
+    timerId = setInterval(function () {
+      setState(prev => {
+        let seconds = parseInt(prev.timer.split(':')[1], 10),
+          minutes = parseInt(prev.timer.split(':')[0], 10);
+        if (prev.cards.length === 0 || prev.gameover) {
+          return false;
         }
+        seconds++;
+        if (seconds > 59) {
+          seconds = '00';
+          minutes++;
+        }
+        if (seconds < 10 && seconds !== '00') {
+          seconds = '0' + seconds;
+        }
+        if (minutes < 10) {
+          minutes = '0' + minutes;
+        }
+        let timer = minutes + ':' + seconds;
+        return {...prev, timer};
       });
-      if (availableMoves === 0) {
-        this.setState({gameover: true, visibleCards: []});
+    }, 1000);
+  };
+
+  const gameoverCheck = () => {
+    setState(prev => {
+      let visibleCards = prev.visibleCards;
+      if (prev.dropZones.areaOne.value && prev.dropZones.areaTwo.value && prev.dropZones.areaThree.value) {
+        let zoneOne = prev.dropZones.areaOne.value,
+          zoneTwo = prev.dropZones.areaTwo.value,
+          zoneThree = prev.dropZones.areaThree.value,
+          availableMoves = 0;
+        visibleCards.map(v => {
+          if (
+            (prev.dropZones.areaTwo.role && v > zoneTwo) ||
+            (!prev.dropZones.areaTwo.role && v < zoneTwo) ||
+            v < zoneOne ||
+            v > zoneThree
+          ) {
+            availableMoves++;
+          }
+        });
+        if (availableMoves === 0) {
+          return {...prev, gameover: true, visibleCards: []};
+        }
       }
-    }
-  }
-  redo() {
-    var dropZones = {...this.state.dropZones},
-      flipCount = this.state.flipCount;
-    dropZones[this.state.prevState.zoneChanged].value = this.state.prevState.lastCard;
-    flipCount--;
-    this.setState({
-      cards: this.state.prevState.cards,
-      score: this.state.prevState.score,
-      visibleCards: this.state.prevState.visibleCards,
-      dropZones,
-      flipCount,
+
+      return prev;
     });
-  }
-  render() {
-    return (
-      <View style={styles.container}>
-        <View style={styles.statusBar}>
+  };
+
+  const redo = () => {
+    setState(prev => {
+      let dropZones = {...prev.dropZones};
+      let flipCount = prev.flipCount;
+      dropZones[prev.prevState.zoneChanged].value = prev.prevState.lastCard;
+      flipCount--;
+      return {
+        ...prev,
+        dropZones,
+        flipCount,
+        cards: prev.prevState.cards,
+        score: prev.prevState.score,
+        visibleCards: prev.prevState.visibleCards,
+      };
+    });
+  };
+
+  return (
+    <View style={styles.container}>
+      <View style={styles.statusBar}>
+        <View style={styles.barItem}>
+          <MyAppText style={styles.barIcon}>Cards left</MyAppText>
+          <MyAppText style={styles.barTxt}>{state.cards?.length}</MyAppText>
+        </View>
+        {state.visibleTimer ? (
           <View style={styles.barItem}>
-            <MyAppText style={styles.barIcon}>Cards left</MyAppText>
-            <MyAppText style={styles.barTxt}>{this.state.cards.length}</MyAppText>
+            <Icon size={height * 0.035} name="md-time-outline" color="#fff" />
+            <MyAppText style={styles.barTxt}>{state.timer}</MyAppText>
           </View>
-          {this.state.visibleTimer ? (
-            <View style={styles.barItem}>
-              <Icon size={height * 0.035} name="md-time-outline" color="#fff" />
-              <MyAppText style={styles.barTxt}>{this.state.timer}</MyAppText>
-            </View>
-          ) : null}
-          {this.state.visibleScore ? (
-            <View style={styles.barItem}>
-              <MyAppText style={styles.barIcon}>Score</MyAppText>
-              <MyAppText style={styles.barTxt}>{this.state.score}</MyAppText>
-            </View>
-          ) : null}
+        ) : null}
+        {state.visibleScore ? (
+          <View style={styles.barItem}>
+            <MyAppText style={styles.barIcon}>Score</MyAppText>
+            <MyAppText style={styles.barTxt}>{state.score}</MyAppText>
+          </View>
+        ) : null}
+      </View>
+
+      {state.settings ? (
+        <View style={styles.settingBar}>
+          <SettingButton
+            icon="ios-arrow-back-outline"
+            onPress={() => setState(prev => ({...prev, settings: !prev.settings}))}
+          />
+          {/* handle !state.visibleTimer icon UI */}
+          <SettingButton
+            icon="md-time-outline"
+            onPress={() => setState(prev => ({...prev, visibleTimer: !prev.visibleTimer}))}
+          />
+          {/* handle !state.visibleScore icon UI */}
+          <SettingButton
+            icon="ios-clipboard-outline"
+            onPress={() => setState(prev => ({...prev, visibleScore: !prev.visibleScore}))}
+          />
+          <SettingButton icon="ios-exit-outline" onPress={() => navigation.goBack()} />
         </View>
+      ) : (
+        <View style={styles.settingBar}>
+          <SettingButton
+            icon="ios-settings-outline"
+            onPress={() => setState(prev => ({...prev, settings: !prev.settings}))}
+          />
+          {/* active only when state.visibleCards.length === 7 */}
+          <SettingButton icon="ios-refresh-outline" onPress={redo} />
+          <SettingButton icon="ios-shuffle-outline" onPress={arrangeCards} />
+        </View>
+      )}
 
-        {this.state.settings ? (
-          <View style={styles.settingBar}>
-            <TouchableNativeFeedback onPress={() => this.setState({settings: !this.state.settings})}>
-              <View style={styles.settingBtn}>
-                <Icon size={height * 0.03} name={'ios-arrow-back-outline'} color={'#fff'} />
-              </View>
-            </TouchableNativeFeedback>
-            <TouchableNativeFeedback onPress={() => this.setState({visibleTimer: !this.state.visibleTimer})}>
-              <View style={styles.settingBtn}>
-                <Icon size={height * 0.03} name={'md-time-outline'} color={this.state.visibleTimer ? '#fff' : '#ccc'} />
-                {!this.state.visibleTimer ? <View style={styles.settingSlash} /> : null}
-              </View>
-            </TouchableNativeFeedback>
-            <TouchableNativeFeedback onPress={() => this.setState({visibleScore: !this.state.visibleScore})}>
-              <View style={styles.settingBtn}>
-                <Icon
-                  size={height * 0.03}
-                  name={'ios-clipboard-outline'}
-                  color={this.state.visibleScore ? '#fff' : '#ccc'}
-                />
-                {!this.state.visibleScore ? <View style={styles.settingSlash} /> : null}
-              </View>
-            </TouchableNativeFeedback>
-            <TouchableNativeFeedback onPress={() => this.props.switchMenu()}>
-              <View style={styles.settingBtn}>
-                <Icon size={height * 0.03} name={'ios-exit-outline'} color="#fff" />
-              </View>
-            </TouchableNativeFeedback>
+      <View style={styles.zonesContainer}>
+        <View onLayout={e => setDropZoneValues(e, 'areaOne')} style={styles.zoneStyle}>
+          <Icon size={width * 0.08} name={'md-arrow-down'} color={'#F73859'} />
+          <View style={styles.zoneCard}>
+            {state.dropZones.areaOne.value ? (
+              <MyAppText style={styles.zoneCardTxt}>{state.dropZones.areaOne.value}</MyAppText>
+            ) : null}
           </View>
-        ) : (
-          <View style={styles.settingBar}>
-            <TouchableNativeFeedback onPress={() => this.setState({settings: !this.state.settings})}>
-              <View style={styles.settingBtn}>
-                <Icon size={height * 0.03} name={'ios-settings-outline'} color="#fff" />
-              </View>
-            </TouchableNativeFeedback>
-            <TouchableNativeFeedback
-              disabled={this.state.visibleCards.length === 7 ? false : true}
-              onPress={() => this.redo()}>
-              <View style={styles.settingBtn}>
-                {this.state.visibleCards.length === 7 ? (
-                  <Icon size={height * 0.03} name={'ios-refresh-outline'} color="#fff" />
-                ) : null}
-              </View>
-            </TouchableNativeFeedback>
-            <TouchableNativeFeedback onPress={this.arrangeCards}>
-              <View style={styles.settingBtn}>
-                <Icon size={height * 0.03} name={'ios-shuffle-outline'} color="#fff" />
-              </View>
-            </TouchableNativeFeedback>
-          </View>
-        )}
-
-        <View style={styles.zonesContainer}>
-          <View onLayout={e => this.setDropZoneValues(e, 'areaOne')} style={styles.zoneStyle}>
-            <Icon size={width * 0.08} name={'md-arrow-down'} color={'#F73859'} />
-            <View style={styles.zoneCard}>
-              {this.state.dropZones.areaOne.value ? (
-                <MyAppText style={styles.zoneCardTxt}>{this.state.dropZones.areaOne.value}</MyAppText>
-              ) : null}
-            </View>
-          </View>
-          <View onLayout={e => this.setDropZoneValues(e, 'areaTwo')} style={styles.zoneStyle}>
-            {this.state.dropZones.areaTwo.role ? (
-              <Icon size={width * 0.08} name={'md-arrow-up'} color={'#27ae60'} />
-            ) : (
-              <Icon size={width * 0.08} name={'md-arrow-down'} color={'#F73859'} />
-            )}
-            <View style={styles.zoneCard}>
-              {this.state.dropZones.areaTwo.value ? (
-                <MyAppText style={styles.zoneCardTxt}>{this.state.dropZones.areaTwo.value}</MyAppText>
-              ) : null}
-            </View>
-          </View>
-          <View onLayout={e => this.setDropZoneValues(e, 'areaThree')} style={styles.zoneStyle}>
+        </View>
+        <View onLayout={e => setDropZoneValues(e, 'areaTwo')} style={styles.zoneStyle}>
+          {state.dropZones.areaTwo.role ? (
             <Icon size={width * 0.08} name={'md-arrow-up'} color={'#27ae60'} />
-            <View style={styles.zoneCard}>
-              {this.state.dropZones.areaThree.value ? (
-                <MyAppText style={styles.zoneCardTxt}>{this.state.dropZones.areaThree.value}</MyAppText>
-              ) : null}
-            </View>
+          ) : (
+            <Icon size={width * 0.08} name={'md-arrow-down'} color={'#F73859'} />
+          )}
+          <View style={styles.zoneCard}>
+            {state.dropZones.areaTwo.value ? (
+              <MyAppText style={styles.zoneCardTxt}>{state.dropZones.areaTwo.value}</MyAppText>
+            ) : null}
           </View>
         </View>
-
-        <View style={styles.cardsContainer}>
-          {this.state.cards.length !== 0 ? (
-            !this.state.gameover ? (
-              this.state.visibleCards.map(number => {
-                return (
-                  <View key={number} style={styles.cardHolder}>
-                    <DraggableCard
-                      key={number}
-                      number={number}
-                      dropZones={this.state.dropZones}
-                      updateValue={this.updateValue}
-                    />
-                  </View>
-                );
-              })
-            ) : (
-              <View style={styles.gameendWrapper}>
-                <MyAppText style={styles.wrapperTitle}>Game Over !</MyAppText>
-                <View style={{flexDirection: 'row'}}>
-                  <TouchableNativeFeedback onPress={this.startNewGame}>
-                    <View style={[styles.wrapperBtn, {marginRight: 20}]}>
-                      <Icon size={width * 0.07} name={'ios-refresh-outline'} color={'#fff'} />
-                    </View>
-                  </TouchableNativeFeedback>
-                  <TouchableNativeFeedback onPress={() => BackHandler.exitApp()}>
-                    <View style={styles.wrapperBtn}>
-                      <Icon size={width * 0.07} name={'ios-exit-outline'} color={'#fff'} />
-                    </View>
-                  </TouchableNativeFeedback>
-                </View>
-              </View>
-            )
-          ) : (
-            <View style={styles.gameendWrapper}>
-              <MyAppText style={styles.wrapperTitle}>You Win !</MyAppText>
-              <View style={{flexDirection: 'row'}}>
-                <TouchableNativeFeedback onPress={this.startNewGame}>
-                  <View style={[styles.wrapperBtn, {marginRight: 20}]}>
-                    <Icon size={width * 0.07} name={'ios-refresh-outline'} color={'#fff'} />
-                  </View>
-                </TouchableNativeFeedback>
-                <TouchableNativeFeedback onPress={() => BackHandler.exitApp()}>
-                  <View style={styles.wrapperBtn}>
-                    <Icon size={width * 0.07} name={'ios-exit-outline'} color={'#fff'} />
-                  </View>
-                </TouchableNativeFeedback>
-              </View>
-            </View>
-          )}
+        <View onLayout={e => setDropZoneValues(e, 'areaThree')} style={styles.zoneStyle}>
+          <Icon size={width * 0.08} name={'md-arrow-up'} color={'#27ae60'} />
+          <View style={styles.zoneCard}>
+            {state.dropZones.areaThree.value ? (
+              <MyAppText style={styles.zoneCardTxt}>{state.dropZones.areaThree.value}</MyAppText>
+            ) : null}
+          </View>
         </View>
       </View>
-    );
-  }
-}
+
+      <View style={styles.cardsContainer}>
+        {state.cards?.length === 0 || state.gameover ? (
+          <View style={styles.gameendWrapper}>
+            <MyAppText style={styles.wrapperTitle}>{state.cards?.length === 0 ? 'You Win !' : 'Game Over !'}</MyAppText>
+            <View style={{flexDirection: 'row'}}>
+              <TouchableNativeFeedback onPress={startNewGame}>
+                <View style={[styles.wrapperBtn, {marginRight: 20}]}>
+                  <Icon size={width * 0.07} name={'ios-refresh-outline'} color={'#fff'} />
+                </View>
+              </TouchableNativeFeedback>
+              <TouchableNativeFeedback onPress={() => BackHandler.exitApp()}>
+                <View style={styles.wrapperBtn}>
+                  <Icon size={width * 0.07} name={'ios-exit-outline'} color={'#fff'} />
+                </View>
+              </TouchableNativeFeedback>
+            </View>
+          </View>
+        ) : (
+          state.visibleCards?.map(number => (
+            <View key={number} style={styles.cardHolder}>
+              <DraggableCard key={number} number={number} dropZones={state.dropZones} updateValue={updateValue} />
+            </View>
+          ))
+        )}
+      </View>
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -447,19 +386,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#341f97',
     elevation: 3,
-  },
-  settingBtn: {
-    flex: 1,
-    alignItems: 'center',
-    paddingVertical: 10,
-  },
-  settingSlash: {
-    width: 1,
-    height: height * 0.04,
-    backgroundColor: '#ccc',
-    position: 'absolute',
-    top: height * 0.01,
-    transform: [{rotateZ: '40deg'}],
   },
   zonesContainer: {
     height: height * 0.3,
