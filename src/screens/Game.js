@@ -416,12 +416,11 @@ class Game extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#404B69',
   },
   statusBar: {
     width: '100%',
     height: height * 0.1,
-    backgroundColor: '#283149',
+    backgroundColor: '#5f27cd',
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
@@ -446,7 +445,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#255883',
+    backgroundColor: '#341f97',
     elevation: 3,
   },
   settingBtn: {
@@ -468,14 +467,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     paddingHorizontal: '5%',
-    borderBottomColor: '#283149',
+    borderBottomColor: '#bbb',
     borderBottomWidth: 0.5,
   },
   zoneStyle: {
     width: width * 0.26,
     height: height * 0.27,
     maxHeight: width * 0.4,
-    backgroundColor: '#DBEDF3',
+    backgroundColor: '#5f27cd',
     borderRadius: 5,
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -493,7 +492,7 @@ const styles = StyleSheet.create({
   zoneCardTxt: {
     width: '100%',
     height: '100%',
-    backgroundColor: '#283149',
+    backgroundColor: '#341f97',
     borderRadius: 5,
     paddingLeft: 10,
     paddingTop: 5,

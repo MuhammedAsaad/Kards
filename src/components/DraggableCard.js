@@ -77,7 +77,7 @@ let styles = StyleSheet.create({
     elevation: 3,
     width: '100%',
     borderRadius: 5,
-    backgroundColor: '#283149',
+    backgroundColor: '#341f97',
   },
   text: {
     color: '#fff',
