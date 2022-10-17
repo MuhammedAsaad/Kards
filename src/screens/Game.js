@@ -38,9 +38,10 @@ const Game = ({navigation}) => {
   }, []);
 
   const setDropZoneValues = (event, name) => {
+    const {layout} = event.nativeEvent;
     setState(prev => {
       let dropZones = {...prev.dropZones};
-      dropZones[name].coordinate = event.nativeEvent.layout;
+      dropZones[name].coordinate = layout;
       return {...prev, dropZones};
     });
   };

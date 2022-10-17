@@ -1,19 +1,25 @@
 import React from 'react';
 import {View} from 'react-native';
-import {NavigationContainer} from '@react-navigation/native';
+import {NavigationContainer, DefaultTheme} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 // Screens
-import Splash from './src/screens/Splash';
 import Menu from './src/screens/Menu';
 import Game from './src/screens/Game';
 
 const Stack = createNativeStackNavigator();
 
+const MyTheme = {
+  ...DefaultTheme,
+  colors: {
+    ...DefaultTheme.colors,
+    background: '#b3b3b3',
+  },
+};
+
 const App = () => (
   <View style={{flex: 1}}>
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName="Splash" screenOptions={{headerShown: false}}>
-        <Stack.Screen name="Splash" component={Splash} />
+    <NavigationContainer theme={MyTheme}>
+      <Stack.Navigator screenOptions={{headerShown: false}}>
         <Stack.Screen name="Menu" component={Menu} />
         <Stack.Screen name="Game" component={Game} />
       </Stack.Navigator>

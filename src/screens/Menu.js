@@ -1,27 +1,29 @@
 import React, {useState} from 'react';
 import {View, Modal, StyleSheet, Dimensions, ScrollView, BackHandler, TouchableOpacity} from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
+import RadialGradient from 'react-native-radial-gradient';
 import MyAppText from '../components/MyAppText';
-import {Fonts, CommonStyles} from '../constants';
+import MyAppButton from '../components/MyAppButton';
+import {Fonts, Buttons, CommonStyles} from '../constants';
 
 const {width, height} = Dimensions.get('window');
 
 const Menu = ({navigation}) => {
   const [infoVisible, toggleInfo] = useState(false);
 
-  const Button = ({text, onPress, color}) => (
-    <TouchableOpacity activeOpacity={0.9} onPress={onPress}>
-      <MyAppText style={[styles.btn, {color}]}>{text}</MyAppText>
-    </TouchableOpacity>
-  );
-
   return (
-    <View style={CommonStyles.container}>
-      <MyAppText style={styles.title}>111 Kards</MyAppText>
-
-      <Button text="Start" onPress={() => navigation.navigate('Game')} color="#F73859" />
-      <Button text="How to play" onPress={() => toggleInfo(!infoVisible)} color="#27ae60" />
-      <Button text="Exit" onPress={() => BackHandler.exitApp()} />
+    <RadialGradient radius={width * 0.8} style={CommonStyles.container} colors={['#ddd', '#bbb']}>
+      <View style={styles.titleWrapper}>
+        <MyAppText style={styles.title}>111 KARDS</MyAppText>
+      </View>
+      <View style={{width: '60%', borderRadius: 30, paddingBottom: 8, backgroundColor: '#44444488'}}>
+        <View style={styles.btnsWrapper}>
+          <View style={{height: 6, position: 'absolute', left: 0, right: 0, top: 0, backgroundColor: '#313f4bee'}} />
+          <MyAppButton text="Start" onPress={() => navigation.navigate('Game')} theme={Buttons.yellow} />
+          <MyAppButton text="How to play" onPress={() => toggleInfo(!infoVisible)} theme={Buttons.green} />
+          <MyAppButton text="Exit" onPress={() => BackHandler.exitApp()} theme={Buttons.white} />
+        </View>
+      </View>
 
       <Modal animationType="slide" visible={infoVisible} onRequestClose={() => toggleInfo(false)}>
         <View style={CommonStyles.container}>
@@ -48,30 +50,39 @@ const Menu = ({navigation}) => {
           </TouchableOpacity>
         </View>
       </Modal>
-    </View>
+    </RadialGradient>
   );
 };
 
 const styles = StyleSheet.create({
-  title: {
-    borderRadius: 5,
-    marginBottom: 35,
-    color: '#F73859',
-    paddingVertical: 12,
-    paddingHorizontal: 30,
-    fontSize: width * 0.15,
-    backgroundColor: '#eee',
-    fontFamily: Fonts.extra_bold,
+  titleWrapper: {
+    width: '65%',
+    borderWidth: 4,
+    borderRadius: 10,
+    overflow: 'hidden',
   },
-  btn: {
-    padding: 15,
-    elevation: 1,
-    marginTop: 15,
-    borderRadius: 5,
+  title: {
+    color: '#fff',
+    paddingTop: 10,
+    paddingBottom: 6,
+    borderTopWidth: 2,
+    ...Buttons.primary,
     textAlign: 'center',
-    minWidth: width * 0.5,
-    fontSize: width * 0.05,
-    backgroundColor: '#eee',
+    borderBottomWidth: 3,
+    fontSize: width * 0.08,
+    fontFamily: Fonts.bold,
+    lineHeight: width * 0.08,
+  },
+  btnsWrapper: {
+    paddingTop: 25,
+    paddingBottom: 15,
+    borderEndWidth: 4,
+    borderStartWidth: 4,
+    borderBottomWidth: 4,
+    paddingHorizontal: 25,
+    backgroundColor: '#3e5167',
+    borderBottomLeftRadius: 30,
+    borderBottomRightRadius: 30,
   },
   infoContainer: {
     padding: 25,
