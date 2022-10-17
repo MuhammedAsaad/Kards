@@ -1,9 +1,11 @@
 import React, {useRef} from 'react';
-import {Text, Animated, Dimensions, StyleSheet, PanResponder} from 'react-native';
+import {View, Animated, Dimensions, StyleSheet, PanResponder} from 'react-native';
+import MyAppText from '../components/MyAppText';
+import {Fonts, Buttons} from '../constants';
 
 const {width} = Dimensions.get('window');
 
-const DraggableCard = ({number, dropZones, updateValue}) => {
+const DraggableCard = ({number, dropZones, updateValue, theme = Buttons.white}) => {
   const pan = useRef(new Animated.ValueXY()).current;
   const panResponder = useRef(
     PanResponder.create({
@@ -65,7 +67,11 @@ const DraggableCard = ({number, dropZones, updateValue}) => {
     <Animated.View
       style={{transform: [{translateX: pan.x}, {translateY: pan.y}], ...styles.wrapper}}
       {...panResponder.panHandlers}>
-      <Text style={styles.text}>{number}</Text>
+      <View style={{flex: 1, backgroundColor: theme.borderTopColor, paddingTop: 2, borderRadius: 6}}>
+        <View style={[styles.btnTextWrapper, {backgroundColor: theme.borderBottomColor}]}>
+          <MyAppText style={[styles.text, {backgroundColor: theme.backgroundColor}]}>{number}</MyAppText>
+        </View>
+      </View>
     </Animated.View>
   );
 };
@@ -73,15 +79,28 @@ const DraggableCard = ({number, dropZones, updateValue}) => {
 let styles = StyleSheet.create({
   wrapper: {
     flex: 1,
-    padding: 7,
-    elevation: 3,
     width: '100%',
-    borderRadius: 5,
-    backgroundColor: '#341f97',
+    borderRadius: 6,
+    paddingBottom: 2,
+    backgroundColor: '#55555555',
+  },
+  btnTextWrapper: {
+    flex: 1,
+    borderRadius: 6,
+    paddingBottom: 4,
   },
   text: {
-    color: '#fff',
-    fontSize: width * 0.05,
+    flex: 1,
+    padding: 10,
+    borderRadius: 6,
+    color: '#222222cc',
+    textShadowRadius: 1,
+    fontFamily: Fonts.bold,
+    textShadowColor: '#fff',
+    fontSize: width * 0.045,
+    lineHeight: width * 0.045,
+    textTransform: 'uppercase',
+    textShadowOffset: {width: 0.5, height: 0.5},
   },
 });
 

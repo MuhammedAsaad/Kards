@@ -29,7 +29,7 @@ const Menu = ({navigation}) => {
           <View style={{height: 6, position: 'absolute', left: 0, right: 0, top: 0, backgroundColor: '#313f4bee'}} />
           <MyAppButton text="Start" onPress={() => navigation.navigate('Game')} theme={Buttons.yellow} />
           <MyAppButton text="How to play" onPress={() => toggleInfo(!infoVisible)} theme={Buttons.green} />
-          <MyAppButton text="Exit" onPress={() => BackHandler.exitApp()} theme={Buttons.white} />
+          <MyAppButton text="Exit" onPress={() => BackHandler.exitApp()} theme={Buttons.pink} />
         </View>
       </View>
 

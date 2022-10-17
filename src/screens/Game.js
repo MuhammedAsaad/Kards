@@ -1,7 +1,8 @@
 import React, {useEffect, useState} from 'react';
 import {View, StyleSheet, TouchableNativeFeedback, BackHandler, Dimensions} from 'react-native';
+import RadialGradient from 'react-native-radial-gradient';
 import Icon from 'react-native-vector-icons/Ionicons';
-import {Fonts} from '../constants';
+import {Fonts, CommonStyles} from '../constants';
 // Components
 import MyAppText from '../components/MyAppText';
 import SettingButton from '../components/SettingButton';
@@ -243,113 +244,114 @@ const Game = ({navigation}) => {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.statusBar}>
-        <View style={styles.barItem}>
-          <MyAppText style={styles.barIcon}>Cards left</MyAppText>
-          <MyAppText style={styles.barTxt}>{state.cards?.length}</MyAppText>
-        </View>
-        {state.visibleTimer ? (
+    <RadialGradient radius={width * 0.8} style={CommonStyles.container} colors={['#ddd', '#bbb']}>
+      <View style={styles.container}>
+        <View style={styles.statusBar}>
           <View style={styles.barItem}>
-            <Icon size={height * 0.035} name="md-time-outline" color="#fff" />
-            <MyAppText style={styles.barTxt}>{state.timer}</MyAppText>
+            <MyAppText style={styles.barIcon}>Cards left</MyAppText>
+            <MyAppText style={styles.barTxt}>{state.cards?.length}</MyAppText>
           </View>
-        ) : null}
-        {state.visibleScore ? (
-          <View style={styles.barItem}>
-            <MyAppText style={styles.barIcon}>Score</MyAppText>
-            <MyAppText style={styles.barTxt}>{state.score}</MyAppText>
-          </View>
-        ) : null}
-      </View>
-
-      {state.settings ? (
-        <View style={styles.settingBar}>
-          <SettingButton
-            icon="ios-arrow-back-outline"
-            onPress={() => setState(prev => ({...prev, settings: !prev.settings}))}
-          />
-          {/* handle !state.visibleTimer icon UI */}
-          <SettingButton
-            icon="md-time-outline"
-            onPress={() => setState(prev => ({...prev, visibleTimer: !prev.visibleTimer}))}
-          />
-          {/* handle !state.visibleScore icon UI */}
-          <SettingButton
-            icon="ios-clipboard-outline"
-            onPress={() => setState(prev => ({...prev, visibleScore: !prev.visibleScore}))}
-          />
-          <SettingButton icon="ios-exit-outline" onPress={() => navigation.goBack()} />
-        </View>
-      ) : (
-        <View style={styles.settingBar}>
-          <SettingButton
-            icon="ios-settings-outline"
-            onPress={() => setState(prev => ({...prev, settings: !prev.settings}))}
-          />
-          {/* active only when state.visibleCards.length === 7 */}
-          <SettingButton icon="ios-refresh-outline" onPress={redo} />
-          <SettingButton icon="ios-shuffle-outline" onPress={arrangeCards} />
-        </View>
-      )}
-
-      <View style={styles.zonesContainer}>
-        <View onLayout={e => setDropZoneValues(e, 'areaOne')} style={styles.zoneStyle}>
-          <Icon size={width * 0.08} name={'md-arrow-down'} color={'#F73859'} />
-          <View style={styles.zoneCard}>
-            {state.dropZones.areaOne.value ? (
-              <MyAppText style={styles.zoneCardTxt}>{state.dropZones.areaOne.value}</MyAppText>
-            ) : null}
-          </View>
-        </View>
-        <View onLayout={e => setDropZoneValues(e, 'areaTwo')} style={styles.zoneStyle}>
-          {state.dropZones.areaTwo.role ? (
-            <Icon size={width * 0.08} name={'md-arrow-up'} color={'#27ae60'} />
-          ) : (
-            <Icon size={width * 0.08} name={'md-arrow-down'} color={'#F73859'} />
-          )}
-          <View style={styles.zoneCard}>
-            {state.dropZones.areaTwo.value ? (
-              <MyAppText style={styles.zoneCardTxt}>{state.dropZones.areaTwo.value}</MyAppText>
-            ) : null}
-          </View>
-        </View>
-        <View onLayout={e => setDropZoneValues(e, 'areaThree')} style={styles.zoneStyle}>
-          <Icon size={width * 0.08} name={'md-arrow-up'} color={'#27ae60'} />
-          <View style={styles.zoneCard}>
-            {state.dropZones.areaThree.value ? (
-              <MyAppText style={styles.zoneCardTxt}>{state.dropZones.areaThree.value}</MyAppText>
-            ) : null}
-          </View>
-        </View>
-      </View>
-
-      <View style={styles.cardsContainer}>
-        {state.cards?.length === 0 || state.gameover ? (
-          <View style={styles.gameendWrapper}>
-            <MyAppText style={styles.wrapperTitle}>{state.cards?.length === 0 ? 'You Win !' : 'Game Over !'}</MyAppText>
-            <View style={{flexDirection: 'row'}}>
-              <TouchableNativeFeedback onPress={startNewGame}>
-                <View style={[styles.wrapperBtn, {marginRight: 20}]}>
-                  <Icon size={width * 0.07} name={'ios-refresh-outline'} color={'#fff'} />
-                </View>
-              </TouchableNativeFeedback>
-              <TouchableNativeFeedback onPress={() => BackHandler.exitApp()}>
-                <View style={styles.wrapperBtn}>
-                  <Icon size={width * 0.07} name={'ios-exit-outline'} color={'#fff'} />
-                </View>
-              </TouchableNativeFeedback>
+          {state.visibleTimer ? (
+            <View style={styles.barItem}>
+              <Icon size={height * 0.035} name="md-time-outline" color="#fff" />
+              <MyAppText style={styles.barTxt}>{state.timer}</MyAppText>
             </View>
+          ) : null}
+          {state.visibleScore ? (
+            <View style={styles.barItem}>
+              <MyAppText style={styles.barIcon}>Score</MyAppText>
+              <MyAppText style={styles.barTxt}>{state.score}</MyAppText>
+            </View>
+          ) : null}
+        </View>
+
+        {state.settings ? (
+          <View style={styles.settingBar}>
+            <SettingButton
+              icon="ios-arrow-back-outline"
+              onPress={() => setState(prev => ({...prev, settings: !prev.settings}))}
+            />
+            <SettingButton
+              icon="md-time-outline"
+              onPress={() => setState(prev => ({...prev, visibleTimer: !prev.visibleTimer}))}
+            />
+            <SettingButton
+              icon="ios-clipboard-outline"
+              onPress={() => setState(prev => ({...prev, visibleScore: !prev.visibleScore}))}
+            />
+            <SettingButton icon="ios-exit-outline" onPress={() => navigation.goBack()} />
           </View>
         ) : (
-          state.visibleCards?.map(number => (
-            <View key={number} style={styles.cardHolder}>
-              <DraggableCard key={number} number={number} dropZones={state.dropZones} updateValue={updateValue} />
-            </View>
-          ))
+          <View style={styles.settingBar}>
+            <SettingButton
+              icon="ios-settings-outline"
+              onPress={() => setState(prev => ({...prev, settings: !prev.settings}))}
+            />
+            <SettingButton icon="ios-refresh-outline" onPress={redo} />
+            <SettingButton icon="ios-shuffle-outline" onPress={arrangeCards} />
+          </View>
         )}
+
+        <View style={styles.zonesContainer}>
+          <View onLayout={e => setDropZoneValues(e, 'areaOne')} style={styles.zoneStyle}>
+            <Icon size={width * 0.08} name={'md-arrow-down'} color={'#F73859'} />
+            <View style={styles.zoneCard}>
+              {state.dropZones.areaOne.value ? (
+                <MyAppText style={styles.zoneCardTxt}>{state.dropZones.areaOne.value}</MyAppText>
+              ) : null}
+            </View>
+          </View>
+          <View onLayout={e => setDropZoneValues(e, 'areaTwo')} style={styles.zoneStyle}>
+            {state.dropZones.areaTwo.role ? (
+              <Icon size={width * 0.08} name={'md-arrow-up'} color={'#27ae60'} />
+            ) : (
+              <Icon size={width * 0.08} name={'md-arrow-down'} color={'#F73859'} />
+            )}
+            <View style={styles.zoneCard}>
+              {state.dropZones.areaTwo.value ? (
+                <MyAppText style={styles.zoneCardTxt}>{state.dropZones.areaTwo.value}</MyAppText>
+              ) : null}
+            </View>
+          </View>
+          <View onLayout={e => setDropZoneValues(e, 'areaThree')} style={styles.zoneStyle}>
+            <Icon size={width * 0.08} name={'md-arrow-up'} color={'#27ae60'} />
+            <View style={styles.zoneCard}>
+              {state.dropZones.areaThree.value ? (
+                <MyAppText style={styles.zoneCardTxt}>{state.dropZones.areaThree.value}</MyAppText>
+              ) : null}
+            </View>
+          </View>
+        </View>
+
+        <View style={styles.cardsContainer}>
+          {state.cards?.length === 0 || state.gameover ? (
+            <View style={styles.gameendWrapper}>
+              <MyAppText style={styles.wrapperTitle}>
+                {state.cards?.length === 0 ? 'You Win !' : 'Game Over !'}
+              </MyAppText>
+              <View style={{flexDirection: 'row'}}>
+                <TouchableNativeFeedback onPress={startNewGame}>
+                  <View style={[styles.wrapperBtn, {marginRight: 20}]}>
+                    <Icon size={width * 0.07} name={'ios-refresh-outline'} color={'#fff'} />
+                  </View>
+                </TouchableNativeFeedback>
+                <TouchableNativeFeedback onPress={() => BackHandler.exitApp()}>
+                  <View style={styles.wrapperBtn}>
+                    <Icon size={width * 0.07} name={'ios-exit-outline'} color={'#fff'} />
+                  </View>
+                </TouchableNativeFeedback>
+              </View>
+            </View>
+          ) : (
+            state.visibleCards?.map(number => (
+              <View key={number} style={styles.cardHolder}>
+                <DraggableCard key={number} number={number} dropZones={state.dropZones} updateValue={updateValue} />
+              </View>
+            ))
+          )}
+        </View>
       </View>
-    </View>
+    </RadialGradient>
   );
 };
 
