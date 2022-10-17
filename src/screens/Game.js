@@ -1,14 +1,26 @@
 import React, {useEffect, useState} from 'react';
-import {View, StyleSheet, TouchableNativeFeedback, BackHandler, Dimensions} from 'react-native';
-import RadialGradient from 'react-native-radial-gradient';
+import {
+  View,
+  Modal,
+  Image,
+  Dimensions,
+  StyleSheet,
+  BackHandler,
+  TouchableOpacity,
+  TouchableNativeFeedback,
+} from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import {Fonts, CommonStyles} from '../constants';
+import RadialGradient from 'react-native-radial-gradient';
+import LinearGradient from 'react-native-linear-gradient';
+import {Fonts, Buttons, CommonStyles} from '../constants';
+import pausedImage from '../assets/paused.png';
 // Components
 import MyAppText from '../components/MyAppText';
-import SettingButton from '../components/SettingButton';
+import MyAppButton from '../components/MyAppButton';
 import DraggableCard from '../components/DraggableCard';
 
 const {width, height} = Dimensions.get('window');
+const ICON_SIZE = height * 0.025;
 
 const Game = ({navigation}) => {
   let timerId;
@@ -247,78 +259,60 @@ const Game = ({navigation}) => {
     <RadialGradient radius={width * 0.8} style={CommonStyles.container} colors={['#ddd', '#bbb']}>
       <View style={styles.container}>
         <View style={styles.statusBar}>
-          <View style={styles.barItem}>
-            <MyAppText style={styles.barIcon}>Cards left</MyAppText>
-            <MyAppText style={styles.barTxt}>{state.cards?.length}</MyAppText>
+          <View style={{flex: 1}}>
+            <Icon size={ICON_SIZE} name="file-tray-full" color="#222222cc" style={styles.textShadow} />
+            <MyAppText style={[styles.barTxt, styles.textShadow]}>{state.cards?.length}</MyAppText>
           </View>
-          {state.visibleTimer ? (
-            <View style={styles.barItem}>
-              <Icon size={height * 0.035} name="md-time-outline" color="#fff" />
-              <MyAppText style={styles.barTxt}>{state.timer}</MyAppText>
-            </View>
-          ) : null}
           {state.visibleScore ? (
-            <View style={styles.barItem}>
-              <MyAppText style={styles.barIcon}>Score</MyAppText>
-              <MyAppText style={styles.barTxt}>{state.score}</MyAppText>
+            <View style={{flex: 1}}>
+              <Icon size={ICON_SIZE} name="stats-chart" color="#222222cc" style={styles.textShadow} />
+              <MyAppText style={[styles.barTxt, styles.textShadow]}>{state.score}</MyAppText>
             </View>
           ) : null}
+          {state.visibleTimer ? (
+            <View style={{flex: 2}}>
+              <Icon size={ICON_SIZE} name="timer" color="#222222cc" style={styles.textShadow} />
+              <MyAppText style={[styles.barTxt, styles.textShadow]}>{state.timer}</MyAppText>
+            </View>
+          ) : null}
+          <TouchableOpacity activeOpacity={0.6} onPress={() => setState(prev => ({...prev, settings: !prev.settings}))}>
+            <Icon size={ICON_SIZE * 1.5} name="pause" color="#222222cc" style={styles.textShadow} />
+          </TouchableOpacity>
         </View>
 
-        {state.settings ? (
-          <View style={styles.settingBar}>
-            <SettingButton
-              icon="ios-arrow-back-outline"
-              onPress={() => setState(prev => ({...prev, settings: !prev.settings}))}
-            />
-            <SettingButton
-              icon="md-time-outline"
-              onPress={() => setState(prev => ({...prev, visibleTimer: !prev.visibleTimer}))}
-            />
-            <SettingButton
-              icon="ios-clipboard-outline"
-              onPress={() => setState(prev => ({...prev, visibleScore: !prev.visibleScore}))}
-            />
-            <SettingButton icon="ios-exit-outline" onPress={() => navigation.goBack()} />
-          </View>
-        ) : (
-          <View style={styles.settingBar}>
-            <SettingButton
-              icon="ios-settings-outline"
-              onPress={() => setState(prev => ({...prev, settings: !prev.settings}))}
-            />
-            <SettingButton icon="ios-refresh-outline" onPress={redo} />
-            <SettingButton icon="ios-shuffle-outline" onPress={arrangeCards} />
-          </View>
-        )}
-
         <View style={styles.zonesContainer}>
-          <View onLayout={e => setDropZoneValues(e, 'areaOne')} style={styles.zoneStyle}>
-            <Icon size={width * 0.08} name={'md-arrow-down'} color={'#F73859'} />
-            <View style={styles.zoneCard}>
-              {state.dropZones.areaOne.value ? (
-                <MyAppText style={styles.zoneCardTxt}>{state.dropZones.areaOne.value}</MyAppText>
-              ) : null}
+          <View style={{borderRadius: 15, paddingBottom: 6, backgroundColor: '#44444466'}}>
+            <View onLayout={e => setDropZoneValues(e, 'areaOne')} style={styles.zoneStyle}>
+              <Icon size={ICON_SIZE} name={'caret-down'} color={Buttons.pink.backgroundColor} />
+              <View style={styles.zoneCard}>
+                {state.dropZones.areaOne.value ? (
+                  <MyAppText style={styles.zoneCardTxt}>{state.dropZones.areaOne.value}</MyAppText>
+                ) : null}
+              </View>
             </View>
           </View>
-          <View onLayout={e => setDropZoneValues(e, 'areaTwo')} style={styles.zoneStyle}>
-            {state.dropZones.areaTwo.role ? (
-              <Icon size={width * 0.08} name={'md-arrow-up'} color={'#27ae60'} />
-            ) : (
-              <Icon size={width * 0.08} name={'md-arrow-down'} color={'#F73859'} />
-            )}
-            <View style={styles.zoneCard}>
-              {state.dropZones.areaTwo.value ? (
-                <MyAppText style={styles.zoneCardTxt}>{state.dropZones.areaTwo.value}</MyAppText>
-              ) : null}
+          <View style={{borderRadius: 15, paddingBottom: 6, backgroundColor: '#44444466'}}>
+            <View onLayout={e => setDropZoneValues(e, 'areaTwo')} style={styles.zoneStyle}>
+              {state.dropZones.areaTwo.role ? (
+                <Icon size={ICON_SIZE} name={'caret-up'} color={Buttons.green.backgroundColor} />
+              ) : (
+                <Icon size={ICON_SIZE} name={'caret-down'} color={Buttons.pink.backgroundColor} />
+              )}
+              <View style={styles.zoneCard}>
+                {state.dropZones.areaTwo.value ? (
+                  <MyAppText style={styles.zoneCardTxt}>{state.dropZones.areaTwo.value}</MyAppText>
+                ) : null}
+              </View>
             </View>
           </View>
-          <View onLayout={e => setDropZoneValues(e, 'areaThree')} style={styles.zoneStyle}>
-            <Icon size={width * 0.08} name={'md-arrow-up'} color={'#27ae60'} />
-            <View style={styles.zoneCard}>
-              {state.dropZones.areaThree.value ? (
-                <MyAppText style={styles.zoneCardTxt}>{state.dropZones.areaThree.value}</MyAppText>
-              ) : null}
+          <View style={{borderRadius: 15, paddingBottom: 6, backgroundColor: '#44444466'}}>
+            <View onLayout={e => setDropZoneValues(e, 'areaThree')} style={styles.zoneStyle}>
+              <Icon size={ICON_SIZE} name={'caret-up'} color={Buttons.green.backgroundColor} />
+              <View style={styles.zoneCard}>
+                {state.dropZones.areaThree.value ? (
+                  <MyAppText style={styles.zoneCardTxt}>{state.dropZones.areaThree.value}</MyAppText>
+                ) : null}
+              </View>
             </View>
           </View>
         </View>
@@ -351,6 +345,41 @@ const Game = ({navigation}) => {
           )}
         </View>
       </View>
+
+      <Modal
+        animationType="fade"
+        visible={state.settings}
+        onRequestClose={() => setState(prev => ({...prev, settings: !prev.settings}))}>
+        <RadialGradient radius={width * 0.8} style={CommonStyles.container} colors={['#ddd', '#bbb']}>
+          <View style={styles.titleWrapper}>
+            <LinearGradient
+              style={{paddingTop: 2, paddingBottom: 4}}
+              colors={[Buttons.primary.borderTopColor, Buttons.primary.borderBottomColor]}>
+              <View style={{backgroundColor: Buttons.primary.backgroundColor}}>
+                <Image
+                  source={pausedImage}
+                  resizeMode="contain"
+                  style={{width: '100%', height: 36, marginVertical: 5}}
+                />
+              </View>
+            </LinearGradient>
+          </View>
+          <View style={{width: '60%', borderRadius: 30, paddingBottom: 8, backgroundColor: '#44444488'}}>
+            <View style={styles.btnsWrapper}>
+              <View
+                style={{height: 6, position: 'absolute', left: 0, right: 0, top: 0, backgroundColor: '#313f4bee'}}
+              />
+              <MyAppButton
+                text="Continue"
+                theme={Buttons.yellow}
+                onPress={() => setState(prev => ({...prev, settings: !prev.settings}))}
+              />
+              <MyAppButton text="Start over" theme={Buttons.green} />
+              <MyAppButton text="Exit" onPress={() => navigation.goBack()} theme={Buttons.pink} />
+            </View>
+          </View>
+        </RadialGradient>
+      </Modal>
     </RadialGradient>
   );
 };
@@ -360,35 +389,23 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   statusBar: {
+    padding: 25,
     width: '100%',
-    height: height * 0.1,
-    backgroundColor: '#5f27cd',
     flexDirection: 'row',
+    alignItems: 'center',
     justifyContent: 'center',
-    alignItems: 'center',
-  },
-  barItem: {
-    flex: 1,
-    alignItems: 'center',
-  },
-  barIcon: {
-    color: '#fff',
-    fontSize: height * 0.025,
   },
   barTxt: {
-    color: '#F73859',
+    marginTop: 5,
+    color: '#222222cc',
+    fontFamily: Fonts.bold,
     fontSize: height * 0.025,
-    marginTop: 2,
-    letterSpacing: 2,
+    lineHeight: height * 0.025,
   },
-  settingBar: {
-    width: '100%',
-    height: height * 0.06,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#341f97',
-    elevation: 3,
+  textShadow: {
+    textShadowRadius: 1,
+    textShadowColor: '#fff',
+    textShadowOffset: {width: 0.5, height: 0.5},
   },
   zonesContainer: {
     height: height * 0.3,
@@ -400,23 +417,23 @@ const styles = StyleSheet.create({
     borderBottomWidth: 0.5,
   },
   zoneStyle: {
-    width: width * 0.26,
+    borderWidth: 2,
+    borderRadius: 15,
+    paddingBottom: 8,
+    width: width * 0.27,
+    paddingHorizontal: 8,
     height: height * 0.27,
-    maxHeight: width * 0.4,
-    backgroundColor: '#5f27cd',
-    borderRadius: 5,
-    alignItems: 'center',
+    maxHeight: width * 0.37,
+    backgroundColor: '#3e5167',
     justifyContent: 'space-between',
-    paddingHorizontal: '2%',
-    paddingBottom: '3%',
-    elevation: 3,
   },
   zoneCard: {
-    backgroundColor: '#fff',
-    width: '100%',
-    height: '75%',
-    borderRadius: 5,
+    flex: 1,
     padding: 4,
+    width: '100%',
+    borderWidth: 1,
+    borderRadius: 5,
+    backgroundColor: '#fff',
   },
   zoneCardTxt: {
     width: '100%',
@@ -445,6 +462,23 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  titleWrapper: {
+    width: '65%',
+    borderWidth: 4,
+    borderRadius: 10,
+    overflow: 'hidden',
+  },
+  btnsWrapper: {
+    paddingTop: 25,
+    paddingBottom: 15,
+    borderEndWidth: 4,
+    borderStartWidth: 4,
+    borderBottomWidth: 4,
+    paddingHorizontal: 25,
+    backgroundColor: '#3e5167',
+    borderBottomLeftRadius: 30,
+    borderBottomRightRadius: 30,
   },
   gameendWrapper: {
     width: '95%',
