@@ -16,16 +16,18 @@ const Zone = ({onLayout, icon, value}) => (
         name={`caret-${icon}`}
         color={icon === 'up' ? Buttons.green.backgroundColor : Buttons.pink.backgroundColor}
       />
-      <View style={styles.card}>
-        {value ? (
-          <View style={styles.cardTopShadow}>
-            <View style={styles.cardBottomShadow}>
-              <View style={{flex: 1, backgroundColor: Buttons.white.backgroundColor}}>
-                {value ? <MyAppText style={styles.text}>{value}</MyAppText> : null}
+      <View style={[styles.cardValueShadow, {backgroundColor: value ? '#313f4bee' : 'transparent'}]}>
+        <View style={styles.card}>
+          {value ? (
+            <View style={styles.cardTopShadow}>
+              <View style={styles.cardBottomShadow}>
+                <View style={{flex: 1, backgroundColor: Buttons.white.backgroundColor}}>
+                  {value ? <MyAppText style={styles.text}>{value}</MyAppText> : null}
+                </View>
               </View>
             </View>
-          </View>
-        ) : null}
+          ) : null}
+        </View>
       </View>
     </View>
   </View>
@@ -40,7 +42,7 @@ const styles = StyleSheet.create({
   wrapper: {
     borderWidth: 2,
     borderRadius: 15,
-    paddingBottom: 8,
+    paddingBottom: 4,
     width: width * 0.27,
     paddingHorizontal: 8,
     height: height * 0.27,
@@ -54,6 +56,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: BORDER_RADIUS,
     backgroundColor: '#f7f7f7',
+  },
+  cardValueShadow: {
+    flex: 1,
+    paddingBottom: 4,
+    borderRadius: BORDER_RADIUS,
   },
   cardTopShadow: {
     flex: 1,
