@@ -1,10 +1,12 @@
 import React, {useState} from 'react';
-import {View, Modal, StyleSheet, Dimensions, ScrollView, BackHandler, TouchableOpacity} from 'react-native';
+import {View, Image, Modal, StyleSheet, Dimensions, ScrollView, BackHandler, TouchableOpacity} from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
+import LinearGradient from 'react-native-linear-gradient';
 import RadialGradient from 'react-native-radial-gradient';
 import MyAppText from '../components/MyAppText';
 import MyAppButton from '../components/MyAppButton';
 import {Fonts, Buttons, CommonStyles} from '../constants';
+import nameImage from '../assets/name.png';
 
 const {width, height} = Dimensions.get('window');
 
@@ -14,7 +16,13 @@ const Menu = ({navigation}) => {
   return (
     <RadialGradient radius={width * 0.8} style={CommonStyles.container} colors={['#ddd', '#bbb']}>
       <View style={styles.titleWrapper}>
-        <MyAppText style={styles.title}>111 KARDS</MyAppText>
+        <LinearGradient
+          style={{paddingTop: 2, paddingBottom: 4}}
+          colors={[Buttons.primary.borderTopColor, Buttons.primary.borderBottomColor]}>
+          <View style={{backgroundColor: Buttons.primary.backgroundColor}}>
+            <Image source={nameImage} resizeMode="contain" style={{width: '100%', height: 36, marginVertical: 5}} />
+          </View>
+        </LinearGradient>
       </View>
       <View style={{width: '60%', borderRadius: 30, paddingBottom: 8, backgroundColor: '#44444488'}}>
         <View style={styles.btnsWrapper}>
@@ -60,18 +68,6 @@ const styles = StyleSheet.create({
     borderWidth: 4,
     borderRadius: 10,
     overflow: 'hidden',
-  },
-  title: {
-    color: '#fff',
-    paddingTop: 10,
-    paddingBottom: 6,
-    borderTopWidth: 2,
-    ...Buttons.primary,
-    textAlign: 'center',
-    borderBottomWidth: 3,
-    fontSize: width * 0.08,
-    fontFamily: Fonts.bold,
-    lineHeight: width * 0.08,
   },
   btnsWrapper: {
     paddingTop: 25,
