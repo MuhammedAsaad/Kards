@@ -6,6 +6,7 @@ import MyAppText from './MyAppText';
 
 const {width, height} = Dimensions.get('window');
 const ICON_SIZE = height * 0.025;
+const BORDER_RADIUS = 6;
 
 const Zone = ({onLayout, icon, value}) => (
   <View onLayout={onLayout} style={styles.shadow}>
@@ -15,7 +16,17 @@ const Zone = ({onLayout, icon, value}) => (
         name={`caret-${icon}`}
         color={icon === 'up' ? Buttons.green.backgroundColor : Buttons.pink.backgroundColor}
       />
-      <View style={styles.card}>{value ? <MyAppText style={styles.text}>{value}</MyAppText> : null}</View>
+      <View style={styles.card}>
+        {value ? (
+          <View style={styles.cardTopShadow}>
+            <View style={styles.cardBottomShadow}>
+              <View style={{flex: 1, backgroundColor: Buttons.white.backgroundColor}}>
+                {value ? <MyAppText style={styles.text}>{value}</MyAppText> : null}
+              </View>
+            </View>
+          </View>
+        ) : null}
+      </View>
     </View>
   </View>
 );
@@ -39,22 +50,36 @@ const styles = StyleSheet.create({
   },
   card: {
     flex: 1,
-    padding: 4,
     width: '100%',
     borderWidth: 1,
-    borderRadius: 5,
-    backgroundColor: '#fff',
+    borderRadius: BORDER_RADIUS,
+    backgroundColor: '#f7f7f7',
+  },
+  cardTopShadow: {
+    flex: 1,
+    paddingTop: 2,
+    overflow: 'hidden',
+    borderRadius: BORDER_RADIUS,
+    backgroundColor: Buttons.white.borderTopColor,
+  },
+  cardBottomShadow: {
+    flex: 1,
+    paddingBottom: 4,
+    borderRadius: BORDER_RADIUS,
+    backgroundColor: Buttons.white.borderBottomColor,
   },
   text: {
-    color: '#fff',
+    padding: 10,
     width: '100%',
     height: '100%',
-    paddingTop: 5,
-    paddingLeft: 10,
-    borderRadius: 5,
-    fontSize: width * 0.06,
-    backgroundColor: '#341f97',
-    fontFamily: Fonts.extra_bold,
+    color: '#222222cc',
+    textShadowRadius: 1,
+    fontFamily: Fonts.bold,
+    textShadowColor: '#fff',
+    fontSize: width * 0.055,
+    lineHeight: width * 0.055,
+    borderRadius: BORDER_RADIUS,
+    textShadowOffset: {width: 0.5, height: 0.5},
   },
 });
 

@@ -2,7 +2,7 @@ import React from 'react';
 import {View, TouchableOpacity, Dimensions, StyleSheet} from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import MyAppText from './MyAppText';
-import {Fonts, Buttons} from '../constants';
+import {Buttons} from '../constants';
 
 const {width} = Dimensions.get('window');
 const BORDER_RADIUS = 6;
@@ -31,7 +31,6 @@ const styles = StyleSheet.create({
     color: '#222222cc',
     textAlign: 'center',
     textShadowRadius: 1,
-    fontFamily: Fonts.bold,
     textShadowColor: '#fff',
     fontSize: width * 0.045,
     lineHeight: width * 0.045,

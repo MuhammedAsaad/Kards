@@ -68,7 +68,7 @@ const DraggableCard = ({number, dropZones, updateValue, theme = Buttons.white}) 
       style={{transform: [{translateX: pan.x}, {translateY: pan.y}], ...styles.wrapper}}
       {...panResponder.panHandlers}>
       <View style={{flex: 1, backgroundColor: theme.borderTopColor, paddingTop: 2, borderRadius: 6}}>
-        <View style={[styles.btnTextWrapper, {backgroundColor: theme.borderBottomColor}]}>
+        <View style={{flex: 1, borderRadius: 6, paddingBottom: 4, backgroundColor: theme.borderBottomColor}}>
           <MyAppText style={[styles.text, {backgroundColor: theme.backgroundColor}]}>{number}</MyAppText>
         </View>
       </View>
@@ -83,11 +83,6 @@ let styles = StyleSheet.create({
     borderRadius: 6,
     paddingBottom: 2,
     backgroundColor: '#55555555',
-  },
-  btnTextWrapper: {
-    flex: 1,
-    borderRadius: 6,
-    paddingBottom: 4,
   },
   text: {
     flex: 1,
