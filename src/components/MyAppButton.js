@@ -1,15 +1,19 @@
 import React from 'react';
 import {View, TouchableOpacity, Dimensions, StyleSheet} from 'react-native';
+import Icon from 'react-native-vector-icons/Ionicons';
 import MyAppText from './MyAppText';
 import {Fonts, Buttons} from '../constants';
 
 const {width} = Dimensions.get('window');
+const BORDER_RADIUS = 6;
 
-const MyAppButton = ({text, onPress, theme = Buttons.primary}) => (
+const MyAppButton = ({text, icon, onPress, theme = Buttons.primary}) => (
   <TouchableOpacity onPress={onPress} style={styles.btn} activeOpacity={0.9}>
-    <View style={{backgroundColor: theme.borderTopColor, paddingTop: 2, borderRadius: 6}}>
-      <View style={[styles.btnTextWrapper, {backgroundColor: theme.borderBottomColor}]}>
-        <MyAppText style={[styles.btnText, theme]}>{text}</MyAppText>
+    <View style={{backgroundColor: theme.borderTopColor, borderRadius: BORDER_RADIUS, paddingTop: 2}}>
+      <View style={{backgroundColor: theme.borderBottomColor, borderRadius: BORDER_RADIUS, paddingBottom: 7}}>
+        <View style={{paddingVertical: 10, borderRadius: BORDER_RADIUS, backgroundColor: theme.backgroundColor}}>
+          {icon ? <Icon name={icon} style={styles.text} /> : <MyAppText style={styles.text}>{text}</MyAppText>}
+        </View>
       </View>
     </View>
   </TouchableOpacity>
@@ -17,22 +21,16 @@ const MyAppButton = ({text, onPress, theme = Buttons.primary}) => (
 
 const styles = StyleSheet.create({
   btn: {
-    borderRadius: 6,
+    minWidth: 50,
     marginBottom: 10,
     paddingBottom: 6,
+    borderRadius: BORDER_RADIUS,
     backgroundColor: '#313f4bee',
   },
-  btnTextWrapper: {
-    borderRadius: 6,
-    paddingBottom: 7,
-  },
-  btnText: {
-    borderRadius: 6,
+  text: {
     color: '#222222cc',
     textAlign: 'center',
     textShadowRadius: 1,
-    paddingVertical: 10,
-    ...Buttons.yellow,
     fontFamily: Fonts.bold,
     textShadowColor: '#fff',
     fontSize: width * 0.045,

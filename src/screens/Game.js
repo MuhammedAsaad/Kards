@@ -1,14 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {
-  View,
-  Modal,
-  Image,
-  Dimensions,
-  StyleSheet,
-  BackHandler,
-  TouchableOpacity,
-  TouchableNativeFeedback,
-} from 'react-native';
+import {View, Modal, Image, Dimensions, StyleSheet, BackHandler, TouchableOpacity} from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import RadialGradient from 'react-native-radial-gradient';
 import LinearGradient from 'react-native-linear-gradient';
@@ -325,24 +316,17 @@ const Game = ({navigation}) => {
           </View>
         </View>
 
+        <View style={styles.optionsWrapper}>
+          <MyAppButton theme={Buttons.yellow} icon="reload" onPress={redo} />
+          <MyAppButton theme={Buttons.green} icon="shuffle" onPress={arrangeCards} />
+        </View>
+
         <View style={styles.cardsContainer}>
           {state.cards?.length === 0 || state.gameover ? (
             <View style={styles.gameendWrapper}>
               <MyAppText style={styles.wrapperTitle}>
                 {state.cards?.length === 0 ? 'You Win !' : 'Game Over !'}
               </MyAppText>
-              <View style={{flexDirection: 'row'}}>
-                <TouchableNativeFeedback onPress={startNewGame}>
-                  <View style={[styles.wrapperBtn, {marginRight: 20}]}>
-                    <Icon size={width * 0.07} name={'ios-refresh-outline'} color={'#fff'} />
-                  </View>
-                </TouchableNativeFeedback>
-                <TouchableNativeFeedback onPress={() => BackHandler.exitApp()}>
-                  <View style={styles.wrapperBtn}>
-                    <Icon size={width * 0.07} name={'ios-exit-outline'} color={'#fff'} />
-                  </View>
-                </TouchableNativeFeedback>
-              </View>
             </View>
           ) : (
             state.visibleCards?.map(number => (
@@ -382,7 +366,19 @@ const Game = ({navigation}) => {
                 theme={Buttons.yellow}
                 onPress={() => setState(prev => ({...prev, settings: !prev.settings}))}
               />
-              <MyAppButton text="Start over" theme={Buttons.green} />
+              <View style={{flexDirection: 'row', justifyContent: 'space-evenly'}}>
+                <MyAppButton
+                  icon="stats-chart"
+                  theme={Buttons.white}
+                  onPress={() => setState(prev => ({...prev, visibleScore: !prev.visibleScore}))}
+                />
+                <MyAppButton
+                  icon="timer"
+                  theme={Buttons.white}
+                  onPress={() => setState(prev => ({...prev, visibleTimer: !prev.visibleTimer}))}
+                />
+              </View>
+              <MyAppButton text="Start over" theme={Buttons.green} onPress={startNewGame} />
               <MyAppButton text="Exit" onPress={() => navigation.goBack()} theme={Buttons.pink} />
             </View>
           </View>
@@ -416,13 +412,11 @@ const styles = StyleSheet.create({
     textShadowOffset: {width: 0.5, height: 0.5},
   },
   zonesContainer: {
-    height: height * 0.3,
-    justifyContent: 'space-between',
+    flex: 1,
     alignItems: 'center',
     flexDirection: 'row',
-    paddingHorizontal: '5%',
-    borderBottomColor: '#bbb',
-    borderBottomWidth: 0.5,
+    paddingHorizontal: 25,
+    justifyContent: 'space-between',
   },
   zoneStyle: {
     borderWidth: 2,
@@ -446,13 +440,23 @@ const styles = StyleSheet.create({
   zoneCardTxt: {
     width: '100%',
     height: '100%',
-    backgroundColor: '#341f97',
     borderRadius: 5,
     paddingLeft: 10,
     paddingTop: 5,
     color: '#fff',
-    fontFamily: Fonts.extra_bold,
     fontSize: width * 0.06,
+    backgroundColor: '#341f97',
+    fontFamily: Fonts.extra_bold,
+  },
+  optionsWrapper: {
+    paddingTop: 10,
+    borderTopWidth: 2,
+    flexDirection: 'row',
+    borderBottomWidth: 2,
+    paddingHorizontal: 25,
+    borderTopColor: '#55555510',
+    borderBottomColor: '#55555510',
+    justifyContent: 'space-between',
   },
   cardsContainer: {
     flex: 1,
