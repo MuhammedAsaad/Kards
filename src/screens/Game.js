@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useRef, useEffect, useState} from 'react';
 import {View, Modal, Image, Dimensions, StyleSheet, BackHandler, TouchableOpacity} from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import RadialGradient from 'react-native-radial-gradient';
@@ -15,7 +15,7 @@ const {width, height} = Dimensions.get('window');
 const ICON_SIZE = height * 0.025;
 
 const Game = ({navigation}) => {
-  let timerId;
+  const timerId = useRef(null);
   const [state, setState] = useState({
     dropZones: {
       areaOne: {
@@ -38,7 +38,16 @@ const Game = ({navigation}) => {
 
   useEffect(() => {
     const backAction = () => {
-      setState(prev => ({...prev, settings: !prev.settings}));
+      setState(prev => {
+        if (prev.settings) {
+          startTimer();
+          return {...prev, settings: !prev.settings};
+        } else {
+          clearInterval(timerId.current);
+          timerId.current = undefined;
+          return {...prev, settings: !prev.settings};
+        }
+      });
       return true;
     };
     const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
@@ -100,6 +109,11 @@ const Game = ({navigation}) => {
       }
       return prev;
     });
+  };
+
+  const continueGame = () => {
+    startTimer();
+    setState(prev => ({...prev, settings: !prev.settings}));
   };
 
   const switchZone = () => {
@@ -187,7 +201,7 @@ const Game = ({navigation}) => {
   };
 
   const startTimer = () => {
-    timerId = setInterval(function () {
+    timerId.current = setInterval(function () {
       setState(prev => {
         let seconds = parseInt(prev.timer.split(':')[1], 10),
           minutes = parseInt(prev.timer.split(':')[0], 10);
@@ -275,7 +289,13 @@ const Game = ({navigation}) => {
               <MyAppText style={[styles.barTxt, styles.textShadow]}>{state.timer}</MyAppText>
             </View>
           ) : null}
-          <TouchableOpacity activeOpacity={0.6} onPress={() => setState(prev => ({...prev, settings: !prev.settings}))}>
+          <TouchableOpacity
+            activeOpacity={0.6}
+            onPress={() => {
+              clearInterval(timerId.current);
+              timerId.current = undefined;
+              setState(prev => ({...prev, settings: !prev.settings}));
+            }}>
             <Icon size={ICON_SIZE * 1.5} name="pause" color="#222222cc" style={styles.textShadow} />
           </TouchableOpacity>
         </View>
@@ -312,10 +332,7 @@ const Game = ({navigation}) => {
         </View>
       </View>
 
-      <Modal
-        animationType="fade"
-        visible={state.settings}
-        onRequestClose={() => setState(prev => ({...prev, settings: !prev.settings}))}>
+      <Modal animationType="fade" visible={state.settings} onRequestClose={continueGame}>
         <RadialGradient radius={width * 0.8} style={CommonStyles.container} colors={['#ddd', '#bbb']}>
           <View style={styles.titleWrapper}>
             <LinearGradient
@@ -335,11 +352,7 @@ const Game = ({navigation}) => {
               <View
                 style={{height: 6, position: 'absolute', left: 0, right: 0, top: 0, backgroundColor: '#313f4bee'}}
               />
-              <MyAppButton
-                text="Continue"
-                theme={Buttons.yellow}
-                onPress={() => setState(prev => ({...prev, settings: !prev.settings}))}
-              />
+              <MyAppButton text="Continue" theme={Buttons.yellow} onPress={continueGame} />
               <View style={{flexDirection: 'row', justifyContent: 'space-evenly'}}>
                 <MyAppButton
                   icon="stats-chart"
