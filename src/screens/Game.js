@@ -45,8 +45,16 @@ const Game = ({navigation}) => {
   });
 
   useEffect(() => {
+    const backAction = () => {
+      setState(prev => ({...prev, settings: !prev.settings}));
+      return true;
+    };
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
     startNewGame();
-    return () => clearInterval(timerId);
+    return () => {
+      clearInterval(timerId);
+      backHandler.remove();
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

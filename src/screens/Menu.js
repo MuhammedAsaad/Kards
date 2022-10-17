@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {View, Image, Modal, StyleSheet, Dimensions, ScrollView, BackHandler, TouchableOpacity} from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import LinearGradient from 'react-native-linear-gradient';
@@ -12,6 +12,12 @@ const {width, height} = Dimensions.get('window');
 
 const Menu = ({navigation}) => {
   const [infoVisible, toggleInfo] = useState(false);
+
+  useEffect(() => {
+    const backAction = () => true;
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
+    return () => backHandler.remove();
+  }, []);
 
   return (
     <RadialGradient radius={width * 0.8} style={CommonStyles.container} colors={['#ddd', '#bbb']}>
