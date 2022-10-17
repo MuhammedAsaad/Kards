@@ -1,11 +1,11 @@
 import React, {useEffect, useState} from 'react';
-import {View, Image, Modal, StyleSheet, Dimensions, ScrollView, BackHandler, TouchableOpacity} from 'react-native';
+import {View, Image, Modal, StyleSheet, Dimensions, BackHandler, TouchableOpacity} from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import LinearGradient from 'react-native-linear-gradient';
 import RadialGradient from 'react-native-radial-gradient';
 import MyAppText from '../components/MyAppText';
 import MyAppButton from '../components/MyAppButton';
-import {Fonts, Buttons, CommonStyles} from '../constants';
+import {Buttons, CommonStyles} from '../constants';
 import nameImage from '../assets/name.png';
 
 const {width, height} = Dimensions.get('window');
@@ -39,30 +39,38 @@ const Menu = ({navigation}) => {
         </View>
       </View>
 
-      <Modal animationType="slide" visible={infoVisible} onRequestClose={() => toggleInfo(false)}>
-        <View style={CommonStyles.container}>
-          <View style={styles.infoContainer}>
-            <ScrollView showsVerticalScrollIndicator={false}>
-              <MyAppText style={styles.infoHeading}>How to play !</MyAppText>
-              <MyAppText style={styles.info}>1- You got 111 cards, get ride of them.</MyAppText>
-              <MyAppText style={[styles.info, {color: '#F73859'}]}>
-                2- Slot with Red Down arrow accepts cards in descending order.
+      <Modal animationType="fade" visible={infoVisible} onRequestClose={() => toggleInfo(false)}>
+        <RadialGradient radius={width * 0.8} style={[CommonStyles.container, {padding: 25}]} colors={['#ddd', '#bbb']}>
+          <View style={[styles.titleWrapper, {width: '100%'}]}>
+            <LinearGradient
+              style={{paddingTop: 2, paddingBottom: 4}}
+              colors={[Buttons.primary.borderTopColor, Buttons.primary.borderBottomColor]}>
+              <View style={{backgroundColor: Buttons.primary.backgroundColor}}>
+                <Image source={nameImage} resizeMode="contain" style={{width: '100%', height: 36, marginVertical: 5}} />
+              </View>
+            </LinearGradient>
+          </View>
+          <View style={{width: '90%', borderRadius: 30, paddingBottom: 8, backgroundColor: '#44444488'}}>
+            <View style={styles.btnsWrapper}>
+              <MyAppText style={styles.info}>👉 You got 111 cards, get ride of them.</MyAppText>
+              <MyAppText style={[styles.info, {color: Buttons.green.backgroundColor}]}>
+                👆 Slot with Green Up arrow accepts cards in ascending order.
               </MyAppText>
-              <MyAppText style={[styles.info, {color: '#27ae60'}]}>
-                3- Slot with Green Up arrow accepts cards in ascending order.
+              <MyAppText style={[styles.info, {color: Buttons.pink.backgroundColor}]}>
+                👇 Slot with red down arrow accepts cards in descending order.
               </MyAppText>
               <MyAppText style={styles.info}>
-                4- Middle Slot is Hyperslot as it turned up and down during game (4 Times).
+                💡 Middle slot is hyperslot as it turned up and down during game (once every 11 rounds).
               </MyAppText>
-              <MyAppText style={[styles.info, {textAlign: 'center', marginTop: 20}]}>Best Luck.</MyAppText>
-            </ScrollView>
+              <MyAppText style={[styles.info, {textAlign: 'center', marginTop: 20}]}>Best Luck...</MyAppText>
+            </View>
           </View>
-          <TouchableOpacity onPress={() => toggleInfo(false)}>
+          <TouchableOpacity activeOpacity={0.8} onPress={() => toggleInfo(false)}>
             <View style={styles.closeBtn}>
               <Icon color="#fff" size={width * 0.08} name="ios-close-circle-outline" />
             </View>
           </TouchableOpacity>
-        </View>
+        </RadialGradient>
       </Modal>
     </RadialGradient>
   );
@@ -94,26 +102,20 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     maxHeight: height - 100,
   },
-  infoHeading: {
-    color: '#255883',
-    marginBottom: 30,
-    textAlign: 'center',
-    fontSize: width * 0.08,
-    fontFamily: Fonts.extra_bold,
-  },
   info: {
+    color: '#fff',
     marginBottom: 5,
-    color: '#255883',
-    fontSize: width * 0.06,
+    fontSize: width * 0.04,
   },
   closeBtn: {
+    marginTop: -8,
     width: width * 0.12,
     height: width * 0.12,
     alignItems: 'center',
+    backgroundColor: '#666',
     justifyContent: 'center',
     borderBottomLeftRadius: 5,
     borderBottomRightRadius: 5,
-    backgroundColor: '#F73859',
   },
 });
 

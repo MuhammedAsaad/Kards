@@ -167,7 +167,7 @@ const Game = ({navigation}) => {
         visibleCards,
         score: 0,
         flipCount: 0,
-        flipLimit: 28,
+        flipLimit: 11,
         timer: '00:00',
         settings: false,
         arranged: false,
@@ -353,7 +353,7 @@ const Game = ({navigation}) => {
                 />
               </View>
               <MyAppButton text="Start over" theme={Buttons.green} onPress={startNewGame} />
-              <MyAppButton text="Exit" onPress={() => navigation.goBack()} theme={Buttons.pink} />
+              <MyAppButton text="Back to menu" onPress={() => navigation.goBack()} theme={Buttons.pink} />
             </View>
           </View>
         </RadialGradient>
