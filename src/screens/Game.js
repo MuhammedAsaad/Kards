@@ -8,6 +8,7 @@ import pausedImage from '../assets/paused.png';
 // Components
 import MyAppText from '../components/MyAppText';
 import MyAppButton from '../components/MyAppButton';
+import Gameover from '../components/Gameover';
 import DraggableCard from '../components/DraggableCard';
 import Zone from '../components/Zone';
 
@@ -206,7 +207,7 @@ const Game = ({navigation}) => {
         let seconds = parseInt(prev.timer.split(':')[1], 10),
           minutes = parseInt(prev.timer.split(':')[0], 10);
         if (prev.cards.length === 0 || prev.gameover) {
-          return false;
+          return prev;
         }
         seconds++;
         if (seconds > 59) {
@@ -244,7 +245,9 @@ const Game = ({navigation}) => {
           }
         });
         if (availableMoves === 0) {
-          return {...prev, gameover: true, visibleCards: []};
+          clearInterval(timerId.current);
+          timerId.current = undefined;
+          return {...prev, gameover: true};
         }
       }
 
@@ -316,21 +319,15 @@ const Game = ({navigation}) => {
         </View>
 
         <View style={styles.cardsContainer}>
-          {state.cards?.length === 0 || state.gameover ? (
-            <View style={styles.gameendWrapper}>
-              <MyAppText style={styles.wrapperTitle}>
-                {state.cards?.length === 0 ? 'You Win !' : 'Game Over !'}
-              </MyAppText>
+          {state.visibleCards?.map(number => (
+            <View key={number} style={styles.cardHolder}>
+              <DraggableCard key={number} number={number} dropZones={state.dropZones} updateValue={updateValue} />
             </View>
-          ) : (
-            state.visibleCards?.map(number => (
-              <View key={number} style={styles.cardHolder}>
-                <DraggableCard key={number} number={number} dropZones={state.dropZones} updateValue={updateValue} />
-              </View>
-            ))
-          )}
+          ))}
         </View>
       </View>
+
+      <Gameover onRequestClose={startNewGame} visible={state.cards?.length === 0 || state.gameover} />
 
       <Modal animationType="fade" visible={state.settings} onRequestClose={continueGame}>
         <RadialGradient radius={width * 0.8} style={CommonStyles.container} colors={['#ddd', '#bbb']}>
