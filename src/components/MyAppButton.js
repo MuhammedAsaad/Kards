@@ -7,11 +7,22 @@ import {Buttons} from '../constants';
 const {width} = Dimensions.get('window');
 const BORDER_RADIUS = 6;
 
-const MyAppButton = ({text, icon, onPress, theme = Buttons.primary}) => (
-  <TouchableOpacity onPress={onPress} style={styles.btn} activeOpacity={0.9}>
-    <View style={{backgroundColor: theme.borderTopColor, borderRadius: BORDER_RADIUS, paddingTop: 2}}>
-      <View style={{backgroundColor: theme.borderBottomColor, borderRadius: BORDER_RADIUS, paddingBottom: 7}}>
-        <View style={{paddingVertical: 10, borderRadius: BORDER_RADIUS, backgroundColor: theme.backgroundColor}}>
+const MyAppButton = ({text, icon, disabled, disableButton, onPress, theme = Buttons.primary}) => (
+  <TouchableOpacity disabled={disableButton && disabled} onPress={onPress} style={styles.btn} activeOpacity={0.9}>
+    <View style={{borderRadius: BORDER_RADIUS, paddingTop: disabled ? 0 : 2, backgroundColor: theme.borderTopColor}}>
+      <View
+        style={{
+          borderRadius: BORDER_RADIUS,
+          paddingBottom: disabled ? 0 : 7,
+          backgroundColor: theme.borderBottomColor,
+        }}>
+        <View
+          style={{
+            justifyContent: 'center',
+            height: disabled ? 49 : 40,
+            borderRadius: BORDER_RADIUS,
+            backgroundColor: disabled ? '#999' : theme.backgroundColor,
+          }}>
           {icon ? <Icon name={icon} style={styles.text} /> : <MyAppText style={styles.text}>{text}</MyAppText>}
         </View>
       </View>

@@ -314,7 +314,13 @@ const Game = ({navigation}) => {
         </View>
 
         <View style={styles.optionsWrapper}>
-          <MyAppButton theme={Buttons.yellow} icon="reload" onPress={redo} />
+          <MyAppButton
+            disableButton
+            icon="reload"
+            onPress={redo}
+            theme={Buttons.yellow}
+            disabled={state.visibleCards?.length !== 7}
+          />
           <MyAppButton theme={Buttons.green} icon="shuffle" onPress={arrangeCards} />
         </View>
 
@@ -354,11 +360,13 @@ const Game = ({navigation}) => {
                 <MyAppButton
                   icon="stats-chart"
                   theme={Buttons.white}
+                  disabled={!state.visibleScore}
                   onPress={() => setState(prev => ({...prev, visibleScore: !prev.visibleScore}))}
                 />
                 <MyAppButton
                   icon="timer"
                   theme={Buttons.white}
+                  disabled={!state.visibleTimer}
                   onPress={() => setState(prev => ({...prev, visibleTimer: !prev.visibleTimer}))}
                 />
               </View>
