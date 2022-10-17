@@ -9,6 +9,7 @@ import pausedImage from '../assets/paused.png';
 import MyAppText from '../components/MyAppText';
 import MyAppButton from '../components/MyAppButton';
 import DraggableCard from '../components/DraggableCard';
+import Zone from '../components/Zone';
 
 const {width, height} = Dimensions.get('window');
 const ICON_SIZE = height * 0.025;
@@ -280,40 +281,13 @@ const Game = ({navigation}) => {
         </View>
 
         <View style={styles.zonesContainer}>
-          <View style={{borderRadius: 15, paddingBottom: 6, backgroundColor: '#44444466'}}>
-            <View onLayout={e => setDropZoneValues(e, 'areaOne')} style={styles.zoneStyle}>
-              <Icon size={ICON_SIZE} name={'caret-down'} color={Buttons.pink.backgroundColor} />
-              <View style={styles.zoneCard}>
-                {state.dropZones.areaOne.value ? (
-                  <MyAppText style={styles.zoneCardTxt}>{state.dropZones.areaOne.value}</MyAppText>
-                ) : null}
-              </View>
-            </View>
-          </View>
-          <View style={{borderRadius: 15, paddingBottom: 6, backgroundColor: '#44444466'}}>
-            <View onLayout={e => setDropZoneValues(e, 'areaTwo')} style={styles.zoneStyle}>
-              {state.dropZones.areaTwo.role ? (
-                <Icon size={ICON_SIZE} name={'caret-up'} color={Buttons.green.backgroundColor} />
-              ) : (
-                <Icon size={ICON_SIZE} name={'caret-down'} color={Buttons.pink.backgroundColor} />
-              )}
-              <View style={styles.zoneCard}>
-                {state.dropZones.areaTwo.value ? (
-                  <MyAppText style={styles.zoneCardTxt}>{state.dropZones.areaTwo.value}</MyAppText>
-                ) : null}
-              </View>
-            </View>
-          </View>
-          <View style={{borderRadius: 15, paddingBottom: 6, backgroundColor: '#44444466'}}>
-            <View onLayout={e => setDropZoneValues(e, 'areaThree')} style={styles.zoneStyle}>
-              <Icon size={ICON_SIZE} name={'caret-up'} color={Buttons.green.backgroundColor} />
-              <View style={styles.zoneCard}>
-                {state.dropZones.areaThree.value ? (
-                  <MyAppText style={styles.zoneCardTxt}>{state.dropZones.areaThree.value}</MyAppText>
-                ) : null}
-              </View>
-            </View>
-          </View>
+          <Zone icon="down" value={state.dropZones.areaOne.value} onLayout={e => setDropZoneValues(e, 'areaOne')} />
+          <Zone
+            value={state.dropZones.areaTwo.value}
+            onLayout={e => setDropZoneValues(e, 'areaTwo')}
+            icon={state.dropZones.areaTwo.role ? 'up' : 'down'}
+          />
+          <Zone icon="up" value={state.dropZones.areaThree.value} onLayout={e => setDropZoneValues(e, 'areaThree')} />
         </View>
 
         <View style={styles.optionsWrapper}>
@@ -417,36 +391,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     paddingHorizontal: 25,
     justifyContent: 'space-between',
-  },
-  zoneStyle: {
-    borderWidth: 2,
-    borderRadius: 15,
-    paddingBottom: 8,
-    width: width * 0.27,
-    paddingHorizontal: 8,
-    height: height * 0.27,
-    maxHeight: width * 0.37,
-    backgroundColor: '#3e5167',
-    justifyContent: 'space-between',
-  },
-  zoneCard: {
-    flex: 1,
-    padding: 4,
-    width: '100%',
-    borderWidth: 1,
-    borderRadius: 5,
-    backgroundColor: '#fff',
-  },
-  zoneCardTxt: {
-    width: '100%',
-    height: '100%',
-    borderRadius: 5,
-    paddingLeft: 10,
-    paddingTop: 5,
-    color: '#fff',
-    fontSize: width * 0.06,
-    backgroundColor: '#341f97',
-    fontFamily: Fonts.extra_bold,
   },
   optionsWrapper: {
     paddingTop: 10,
