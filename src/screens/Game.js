@@ -186,7 +186,7 @@ const Game = ({navigation}) => {
         timer: '00:00',
         settings: false,
         arranged: false,
-        gameover: true,
+        gameover: false,
         visibleTimer: true,
         visibleScore: true,
         prevState: {
