@@ -2,6 +2,7 @@ import React from 'react';
 import {View} from 'react-native';
 import MyAppButton from '../components/MyAppButton';
 import MainContext from '../contexts/Main';
+import SoundContext from '../contexts/Sound';
 import {Buttons} from '../constants';
 
 const SettingsOptions = () => (
@@ -12,7 +13,14 @@ const SettingsOptions = () => (
           theme={Buttons.white}
           disabled={!settings.sounds}
           icon={settings.sounds ? 'volume-high' : 'volume-mute'}
-          onPress={() => setState(prev => ({...prev, settings: {...prev.settings, sounds: !prev.settings.sounds}}))}
+          onPress={() => {
+            setState(prev => {
+              if (!prev.settings.sounds) {
+                SoundContext.play();
+              }
+              return {...prev, settings: {...prev.settings, sounds: !prev.settings.sounds}};
+            });
+          }}
         />
         <MyAppButton
           icon="stats-chart"

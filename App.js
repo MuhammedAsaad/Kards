@@ -4,6 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {NavigationContainer, DefaultTheme} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import MainContext from './src/contexts/Main';
+require('./src/contexts/Sound');
 // Screens
 import Home from './src/screens/Home';
 import Game from './src/screens/Game';
