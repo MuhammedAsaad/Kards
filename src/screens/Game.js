@@ -3,6 +3,7 @@ import {View, Modal, Image, Dimensions, StyleSheet, BackHandler, TouchableOpacit
 import Icon from 'react-native-vector-icons/Ionicons';
 import RadialGradient from 'react-native-radial-gradient';
 import LinearGradient from 'react-native-linear-gradient';
+import MainContext from '../contexts/Main';
 import {Fonts, Buttons, CommonStyles} from '../constants';
 import pausedImage from '../assets/paused.png';
 // Components
@@ -11,6 +12,7 @@ import MyAppButton from '../components/MyAppButton';
 import Gameover from '../menus/Gameover';
 import DraggableCard from '../components/DraggableCard';
 import Zone from '../components/Zone';
+import SettingsOptions from '../components/SettingsOptions';
 
 const {width, height} = Dimensions.get('window');
 const ICON_SIZE = height * 0.025;
@@ -187,8 +189,6 @@ const Game = ({navigation}) => {
         settings: false,
         arranged: false,
         gameover: false,
-        visibleTimer: true,
-        visibleScore: true,
         prevState: {
           score: 0,
           cardPlayed: null,
@@ -276,22 +276,29 @@ const Game = ({navigation}) => {
     <RadialGradient radius={width * 0.8} style={CommonStyles.container} colors={['#ddd', '#bbb']}>
       <View style={styles.container}>
         <View style={styles.statusBar}>
-          <View style={{flex: 1}}>
+          <View style={{marginRight: 25}}>
             <Icon size={ICON_SIZE} name="file-tray-full" color="#222222cc" style={styles.textShadow} />
             <MyAppText style={[styles.barTxt, styles.textShadow]}>{state.cards?.length}</MyAppText>
           </View>
-          {state.visibleScore ? (
-            <View style={{flex: 1}}>
-              <Icon size={ICON_SIZE} name="stats-chart" color="#222222cc" style={styles.textShadow} />
-              <MyAppText style={[styles.barTxt, styles.textShadow]}>{state.score}</MyAppText>
-            </View>
-          ) : null}
-          {state.visibleTimer ? (
-            <View style={{flex: 2}}>
-              <Icon size={ICON_SIZE} name="timer" color="#222222cc" style={styles.textShadow} />
-              <MyAppText style={[styles.barTxt, styles.textShadow]}>{state.timer}</MyAppText>
-            </View>
-          ) : null}
+          <MainContext.Consumer>
+            {({settings}) => (
+              <>
+                {settings.timer ? (
+                  <View style={{minWidth: 70, marginRight: 25}}>
+                    <Icon size={ICON_SIZE} name="timer" color="#222222cc" style={styles.textShadow} />
+                    <MyAppText style={[styles.barTxt, styles.textShadow]}>{state.timer}</MyAppText>
+                  </View>
+                ) : null}
+                {settings.score ? (
+                  <View style={{marginRight: 25}}>
+                    <Icon size={ICON_SIZE} name="stats-chart" color="#222222cc" style={styles.textShadow} />
+                    <MyAppText style={[styles.barTxt, styles.textShadow]}>{state.score}</MyAppText>
+                  </View>
+                ) : null}
+              </>
+            )}
+          </MainContext.Consumer>
+          <View style={{flex: 1}} />
           <TouchableOpacity
             activeOpacity={0.6}
             onPress={() => {
@@ -361,20 +368,7 @@ const Game = ({navigation}) => {
                 style={{height: 6, position: 'absolute', left: 0, right: 0, top: 0, backgroundColor: '#313f4bee'}}
               />
               <MyAppButton text="Continue" theme={Buttons.yellow} onPress={continueGame} />
-              <View style={{flexDirection: 'row', justifyContent: 'space-evenly'}}>
-                <MyAppButton
-                  icon="stats-chart"
-                  theme={Buttons.white}
-                  disabled={!state.visibleScore}
-                  onPress={() => setState(prev => ({...prev, visibleScore: !prev.visibleScore}))}
-                />
-                <MyAppButton
-                  icon="timer"
-                  theme={Buttons.white}
-                  disabled={!state.visibleTimer}
-                  onPress={() => setState(prev => ({...prev, visibleTimer: !prev.visibleTimer}))}
-                />
-              </View>
+              <SettingsOptions />
               <MyAppButton text="Start over" theme={Buttons.green} onPress={startNewGame} />
               <MyAppButton text="Back to menu" onPress={() => navigation.goBack()} theme={Buttons.pink} />
             </View>

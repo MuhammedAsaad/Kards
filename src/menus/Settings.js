@@ -4,9 +4,9 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import RadialGradient from 'react-native-radial-gradient';
 import Header from '../components/Header';
 import MyAppText from '../components/MyAppText';
-import MyAppButton from '../components/MyAppButton';
+import SettingsOptions from '../components/SettingsOptions';
 import MainContext from '../contexts/Main';
-import {Buttons, CommonStyles} from '../constants';
+import {CommonStyles} from '../constants';
 import settingsImage from '../assets/settings.png';
 
 const {width} = Dimensions.get('window');
@@ -24,36 +24,10 @@ const Settings = ({visible, onRequestClose}) => (
       <Header source={settingsImage} style={{width: '100%'}} />
       <View style={{width: '90%', borderRadius: 30, paddingBottom: 8, backgroundColor: '#44444488'}}>
         <View style={CommonStyles.content}>
+          <SettingsOptions />
           <MainContext.Consumer>
-            {({scores, settings, stats, setState}) => (
+            {({scores, stats}) => (
               <>
-                <View style={{flexDirection: 'row', justifyContent: 'space-evenly'}}>
-                  <MyAppButton
-                    theme={Buttons.white}
-                    disabled={!settings.sounds}
-                    icon={settings.sounds ? 'volume-high' : 'volume-mute'}
-                    onPress={() =>
-                      setState(prev => ({...prev, settings: {...prev.settings, sounds: !prev.settings.sounds}}))
-                    }
-                  />
-                  <MyAppButton
-                    icon="stats-chart"
-                    theme={Buttons.white}
-                    disabled={!settings.score}
-                    onPress={() =>
-                      setState(prev => ({...prev, settings: {...prev.settings, score: !prev.settings.score}}))
-                    }
-                  />
-                  <MyAppButton
-                    icon="timer"
-                    theme={Buttons.white}
-                    disabled={!settings.timer}
-                    onPress={() =>
-                      setState(prev => ({...prev, settings: {...prev.settings, timer: !prev.settings.timer}}))
-                    }
-                  />
-                </View>
-
                 <MyAppText>best scores</MyAppText>
                 {scores.map((score, index) => Info(`${index + 1}. ${score.value || 'empty'}`, score.date))}
                 <MyAppText>statistics</MyAppText>
