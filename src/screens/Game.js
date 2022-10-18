@@ -333,7 +333,12 @@ const Game = ({navigation}) => {
         </View>
       </View>
 
-      <Gameover onRequestClose={startNewGame} visible={state.cards?.length === 0 || state.gameover} />
+      <Gameover
+        navigation={navigation}
+        onRequestClose={startNewGame}
+        win={state.cards?.length === 0}
+        visible={state.cards?.length === 0 || state.gameover}
+      />
 
       <Modal animationType="fade" visible={state.settings} onRequestClose={continueGame}>
         <RadialGradient radius={width * 0.8} style={CommonStyles.container} colors={['#ddd', '#bbb']}>

@@ -6,7 +6,8 @@ import RadialGradient from 'react-native-radial-gradient';
 import MyAppText from '../components/MyAppText';
 import MyAppButton from '../components/MyAppButton';
 import {Buttons, CommonStyles} from '../constants';
-import nameImage from '../assets/name.png';
+import menu from '../assets/menu.png';
+import how_to_play from '../assets/how_to_play.png';
 
 const {width, height} = Dimensions.get('window');
 
@@ -26,14 +27,15 @@ const Menu = ({navigation}) => {
           style={{paddingTop: 2, paddingBottom: 4}}
           colors={[Buttons.primary.borderTopColor, Buttons.primary.borderBottomColor]}>
           <View style={{backgroundColor: Buttons.primary.backgroundColor}}>
-            <Image source={nameImage} resizeMode="contain" style={{width: '100%', height: 36, marginVertical: 5}} />
+            <Image source={menu} resizeMode="contain" style={{width: '100%', height: 36, marginVertical: 5}} />
           </View>
         </LinearGradient>
       </View>
       <View style={{width: '60%', borderRadius: 30, paddingBottom: 8, backgroundColor: '#44444488'}}>
         <View style={styles.btnsWrapper}>
           <View style={{height: 6, position: 'absolute', left: 0, right: 0, top: 0, backgroundColor: '#313f4bee'}} />
-          <MyAppButton text="Start" onPress={() => navigation.navigate('Game')} theme={Buttons.yellow} />
+          <MyAppButton text="start" onPress={() => navigation.navigate('Game')} theme={Buttons.yellow} />
+          <MyAppButton text="settings" onPress={() => toggleInfo(!infoVisible)} theme={Buttons.white} />
           <MyAppButton text="How to play" onPress={() => toggleInfo(!infoVisible)} theme={Buttons.green} />
           <MyAppButton text="Exit" onPress={() => BackHandler.exitApp()} theme={Buttons.pink} />
         </View>
@@ -46,7 +48,11 @@ const Menu = ({navigation}) => {
               style={{paddingTop: 2, paddingBottom: 4}}
               colors={[Buttons.primary.borderTopColor, Buttons.primary.borderBottomColor]}>
               <View style={{backgroundColor: Buttons.primary.backgroundColor}}>
-                <Image source={nameImage} resizeMode="contain" style={{width: '100%', height: 36, marginVertical: 5}} />
+                <Image
+                  source={how_to_play}
+                  resizeMode="contain"
+                  style={{width: '100%', height: 36, marginVertical: 5}}
+                />
               </View>
             </LinearGradient>
           </View>
