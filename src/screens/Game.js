@@ -183,9 +183,9 @@ const Game = ({navigation}) => {
         dropZones,
         visibleCards,
         score: 0,
+        timer: 0,
         flipCount: 0,
         flipLimit: 11,
-        timer: '00:00',
         settings: false,
         arranged: false,
         gameover: false,
@@ -204,24 +204,10 @@ const Game = ({navigation}) => {
   const startTimer = () => {
     timerId.current = setInterval(function () {
       setState(prev => {
-        let seconds = parseInt(prev.timer.split(':')[1], 10),
-          minutes = parseInt(prev.timer.split(':')[0], 10);
         if (prev.cards.length === 0 || prev.gameover) {
           return prev;
         }
-        seconds++;
-        if (seconds > 59) {
-          seconds = '00';
-          minutes++;
-        }
-        if (seconds < 10 && seconds !== '00') {
-          seconds = '0' + seconds;
-        }
-        if (minutes < 10) {
-          minutes = '0' + minutes;
-        }
-        let timer = minutes + ':' + seconds;
-        return {...prev, timer};
+        return {...prev, timer: prev.timer + 1};
       });
     }, 1000);
   };
@@ -272,6 +258,14 @@ const Game = ({navigation}) => {
     });
   };
 
+  const formatTimer = time => {
+    const hours = Math.floor(time / 3600);
+    const minutes = Math.floor((time - hours * 3600) / 60);
+    const seconds = time - hours * 3600 - minutes * 60;
+    const doubleSlot = num => (num < 10 ? `0${num}` : num);
+    return `${hours > 0 ? `${doubleSlot(hours)}:` : ''}${doubleSlot(minutes)}:${doubleSlot(seconds)}`;
+  };
+
   return (
     <RadialGradient radius={width * 0.8} style={CommonStyles.container} colors={['#ddd', '#bbb']}>
       <View style={styles.container}>
@@ -284,9 +278,9 @@ const Game = ({navigation}) => {
             {({settings}) => (
               <>
                 {settings.timer ? (
-                  <View style={{minWidth: 70, marginRight: 25}}>
+                  <View style={{minWidth: 100, marginRight: 25}}>
                     <Icon size={ICON_SIZE} name="timer" color="#222222cc" style={styles.textShadow} />
-                    <MyAppText style={[styles.barTxt, styles.textShadow]}>{state.timer}</MyAppText>
+                    <MyAppText style={[styles.barTxt, styles.textShadow]}>{formatTimer(state.timer)}</MyAppText>
                   </View>
                 ) : null}
                 {settings.score ? (
