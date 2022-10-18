@@ -8,7 +8,7 @@ import pausedImage from '../assets/paused.png';
 // Components
 import MyAppText from '../components/MyAppText';
 import MyAppButton from '../components/MyAppButton';
-import Gameover from '../components/Gameover';
+import Gameover from '../menus/Gameover';
 import DraggableCard from '../components/DraggableCard';
 import Zone from '../components/Zone';
 
@@ -186,7 +186,7 @@ const Game = ({navigation}) => {
         timer: '00:00',
         settings: false,
         arranged: false,
-        gameover: false,
+        gameover: true,
         visibleTimer: true,
         visibleScore: true,
         prevState: {
